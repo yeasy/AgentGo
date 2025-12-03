@@ -38,7 +38,7 @@
 - Claude Code / Codex / Cursor / Copilot / Windsurf / Gemini 各有一套配置格式，规则反复抄
 - 写完一遍项目约定，知识又跟着聊天记录走，记忆越长越多噪音
 
-**agentrc 给你的：** 一份符合最佳实践的 [AGENTS.md spec](https://raw.githubusercontent.com/yeasy/agentrc/main/AGENTS.md) ——下载放进项目根目录，所有主流 Agent 立刻按最佳实践工作并自维护项目记忆。**你不用配置任何东西。**
+**agentrc 给你的：** 一份符合最佳实践的 [AGENTS.md spec](https://raw.githubusercontent.com/yeasy/agentrc/main/AGENTS.zh-CN.md) ——下载放进项目根目录，所有主流 Agent 立刻按最佳实践工作并自维护项目记忆。**你不用配置任何东西。**
 
 |           | 没有 agentrc                     | 有 agentrc                      |
 |:----------|:--------------------------------|:--------------------------------|
@@ -52,11 +52,13 @@
 
 ## 快速开始
 
-只需一步，下载 [AGENTS.md](https://github.com/yeasy/agentrc/blob/main/AGENTS.md) 放到项目根目录：
+只需一步，下载 [AGENTS.zh-CN.md](https://github.com/yeasy/agentrc/blob/main/AGENTS.zh-CN.md) 并重命名为 `AGENTS.md` 放到项目根目录（下面 `curl -o` 已经顺便改名）：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/yeasy/agentrc/main/AGENTS.md -o AGENTS.md
+curl -fsSL https://raw.githubusercontent.com/yeasy/agentrc/main/AGENTS.zh-CN.md -o AGENTS.md
 ```
+
+> 想用英文版？把上面的 `AGENTS.zh-CN.md` 替换为 `AGENTS.md` 即可（或参见 [English README](./README.md)）。
 
 然后重新打开 Codex / Claude Code / Copilot / Cursor / Gemini / Windsurf——Agent 一下子变聪明了，按最佳实践管理你的项目。
 
