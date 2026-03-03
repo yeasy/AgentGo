@@ -1,0 +1,43 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+*~
+.directory
+.Trash-*
+
+# JetBrains IDEs (IntelliJ, PyCharm, WebStorm, ...)
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# Vim / Emacs
+*.swp
+*.swo
+*~
+\#*\#
+.\#*
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Logs / temp
+*.log
+*.tmp
+
+# agentrc itself: this repo is the spec, not a project that uses it.
+# Downstream users should commit AGENTS.md and decide per-team whether
+# to gitignore .agents/ — see README "Should I commit .agents/ to git?"
