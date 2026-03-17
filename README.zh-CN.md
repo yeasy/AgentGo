@@ -52,13 +52,11 @@
 
 ## 快速开始
 
-只需一步，下载 [AGENTS.zh-CN.md](https://github.com/yeasy/agentrc/blob/main/AGENTS.zh-CN.md) 并重命名为 `AGENTS.md` 放到项目根目录（下面 `curl -o` 已经顺便改名）：
+只需一步，把 [AGENTS.zh-CN.md](https://github.com/yeasy/agentrc/blob/main/AGENTS.zh-CN.md) 下载到项目根目录并保存为 `AGENTS.md`（AGENTS 规范要求文件名固定）：
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/yeasy/agentrc/main/AGENTS.zh-CN.md -o AGENTS.md
 ```
-
-> 想用英文版？把上面的 `AGENTS.zh-CN.md` 替换为 `AGENTS.md` 即可（或参见 [English README](./README.md)）。
 
 然后重新打开 Codex / Claude Code / Copilot / Cursor / Gemini / Windsurf——Agent 一下子变聪明了，按最佳实践管理你的项目。
 
