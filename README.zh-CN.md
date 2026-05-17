@@ -254,6 +254,36 @@ your-project/
 </details>
 
 <details>
+<summary><strong>以后怎么更新 AGENTS.md？</strong></summary>
+
+只更新 `AGENTS.md`，保留 `.agents/`。`.agents/` 是项目本地记忆，模板更新时不应删除或替换。
+
+如果本地 `AGENTS.md` 没有项目级手改：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/main/AGENTS.zh-CN.md -o AGENTS.md
+```
+
+如果可能手改过，先下载到临时文件再比较：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/main/AGENTS.zh-CN.md -o /tmp/AGENTS.latest.md
+diff -u AGENTS.md /tmp/AGENTS.latest.md
+```
+
+如果要锁定稳定发布版，而不是跟随 `main`：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.0.0/AGENTS.zh-CN.md -o AGENTS.md
+```
+
+更新后重启或要求 Agent 重扫：
+
+> **"按 AGENTS.md 重新扫描这个项目；保留已有 `.agents/`，只报告新增或变化的规则，不要覆盖现有记忆。"**
+
+</details>
+
+<details>
 <summary><strong>.agents/ 会不会越长越大变成噪音？</strong></summary>
 
 会，所以 `AGENTS.md` 给 Agent 规定了**维护节奏**：进入会话时验证最近笔记是否仍与当前项目产物一致；任一 `memory/` 文件 > 200 行、`changelog.md` 自上次 `[MAINTENANCE]` 起新增 ≥ 30 行、已完成 10 次有意义任务，或发现失效笔记时触发清理。清理会去重、关闭已解决事项、删除失效笔记，并追加 `[MAINTENANCE]` changelog。

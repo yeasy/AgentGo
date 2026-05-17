@@ -254,6 +254,36 @@ Common team pattern:
 </details>
 
 <details>
+<summary><strong>How do I update AGENTS.md later?</strong></summary>
+
+Update only `AGENTS.md`; keep `.agents/` in place. `.agents/` is your project's local memory and should not be deleted or replaced during template updates.
+
+If your local `AGENTS.md` has no project-specific edits:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/main/AGENTS.md -o AGENTS.md
+```
+
+If you may have edited it locally, diff before replacing:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/main/AGENTS.md -o /tmp/AGENTS.latest.md
+diff -u AGENTS.md /tmp/AGENTS.latest.md
+```
+
+To pin a stable release instead of tracking `main`:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.0.0/AGENTS.md -o AGENTS.md
+```
+
+After updating, restart or rescan your agent:
+
+> **"Rescan this project per AGENTS.md. Keep the existing `.agents/`; report new or changed guidance without overwriting memory."**
+
+</details>
+
+<details>
 <summary><strong>Won't .agents/ keep growing and turn into noise?</strong></summary>
 
 It will, which is why `AGENTS.md` enforces a **maintenance cadence**: on session entry, validate that recent notes still match current project artifacts; clean up whenever any `memory/` file exceeds 200 lines, `changelog.md` has grown ≥ 30 lines since the last `[MAINTENANCE]`, 10 meaningful tasks have completed, or stale notes are found. Cleanup dedupes entries, closes resolved items, removes stale notes, and appends a `[MAINTENANCE]` changelog line.

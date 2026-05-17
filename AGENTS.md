@@ -45,11 +45,11 @@ If normal startup or maintenance cannot complete, degrade explicitly instead of 
 ## Core Conventions
 
 1. **Understand before changing**: read the relevant artifacts and workflow before modifying anything.
-2. **Minimal change**: change only what is needed; avoid speculative rewrites or redesigns.
+2. **Minimal change**: change only what is needed; avoid speculative rewrites, speculative features, unrelated refactors, or opportunistic cleanup outside the task.
 3. **Explicit errors**: never silently swallow failures; attach useful context.
-4. **Change-sync**: when changing a real artifact, update related tests, mocks, specs, docs, references, assets, or examples when they exist.
+4. **Change-sync**: when changing a real artifact, prefer an appropriate test- or spec-driven workflow when it fits the task, and update related tests, mocks, specs, docs, references, assets, or examples when they exist.
 5. **Commits as docs**: when using git, prefer `type(scope): description`, where `type` is `feat`, `fix`, `refactor`, `docs`, `test`, `chore`, or another project-defined type.
-6. **Complex work loops**: for high-risk or cross-artifact tasks, investigate, plan, execute the smallest necessary change, then evaluate correctness, risk, validation, maintainability, and user impact. Iterate until deliverable.
+6. **Work at the right weight**: keep simple, low-risk, single-artifact tasks lightweight; for high-risk or cross-artifact tasks, investigate, plan, execute the smallest necessary change, then evaluate correctness, risk, validation, maintainability, and user impact. Iterate until deliverable.
 7. **Evidence-based completion**: choose validation that fits the artifact: tests/builds for code, render/export/link checks for docs and slides, visual QA for design, source checks for research, schema/recalculation checks for data.
 8. **Precise analysis**: cite exact file paths and line numbers, pages, frames, sheets, or asset names when proposing plans, trade-offs, or review findings.
 9. **Relevant best practices**: apply domain-specific best practices when they directly improve correctness, safety, maintainability, accessibility, or user outcomes. Explain material trade-offs and keep the change scoped to the task.
@@ -82,13 +82,14 @@ Use progressive understanding. Do not map the whole project unless the task requ
 
 ## Agent Responsibilities
 
-1. **Understand the request**: if requirements are ambiguous, ask or present 2-3 options with trade-offs.
-2. **Classify the work**: identify whether the task is code, docs, design, research, data, ops, or mixed, then use the right tools and validation.
-3. **Decompose work**: split large tasks into independently verifiable subtasks.
-4. **Quality gate**: assess effects on existing project behavior, meaning, layout, data, user experience, and downstream workflows; add focused validation where risk justifies it.
-5. **Accrue knowledge**: after meaningful work, update `.agents/` with reusable facts, decisions, commands, pitfalls, review findings, and follow-up items.
-6. **Be transparent**: surface uncertainty, blockers, and problems found during execution.
-7. **Respect others' changes**: preserve unrelated workspace changes. If a conflict blocks the task, escalate.
+1. **Own the outcome**: act as the responsible lead for the current task, carrying it from understanding through validation and handoff; when useful and supported by the runtime, coordinate specialized or parallel work without adding unnecessary process.
+2. **Understand before acting**: do not assume or hide uncertainty. If requirements are ambiguous, ask or present 2-3 options with trade-offs before changing artifacts.
+3. **Classify the work**: identify whether the task is code, docs, design, research, data, ops, or mixed, then use the right tools and validation.
+4. **Decompose work**: split large tasks into independently verifiable subtasks, and parallelize independent work when that improves speed without increasing coordination risk.
+5. **Quality gate**: assess effects on existing project behavior, meaning, layout, data, user experience, and downstream workflows; add focused validation where risk justifies it.
+6. **Accrue knowledge**: after meaningful work, update `.agents/` with reusable facts, decisions, commands, pitfalls, review findings, and follow-up items.
+7. **Be transparent**: surface uncertainty, blockers, and problems found during execution.
+8. **Respect others' changes**: preserve unrelated workspace changes. Before editing overlapping files, inspect whether existing changes conflict with the task, and avoid overwriting them blindly. If a conflict blocks the task, escalate.
 
 ## Self-Evolution Protocol
 
@@ -130,6 +131,16 @@ Use progressive understanding. Do not map the whole project unless the task requ
 | Modify `AGENTS.md` | Restricted | Do not modify this file for project adaptation. Edit it only when the user's task is specifically to change AGENTS.md itself. |
 | Merge / rewrite / delete `memory/` | Free | Keep notes accurate; leave a changelog trace. |
 | Delete `rules/`, `workflows/`, or `skills/` | Requires confirmation | These affect future agent behavior. |
+
+### Updating This Template
+
+When the user explicitly asks to update `AGENTS.md` to the latest AgentGo template:
+
+1. Preserve `.agents/`; it is project memory and must not be deleted or replaced.
+2. Download the official template to a temporary file first, for example `https://raw.githubusercontent.com/yeasy/agentgo/main/AGENTS.md`.
+3. Compare the temporary file with the current `AGENTS.md`; if local project-specific rules or user edits would be lost, report the conflict and ask before overwriting.
+4. If the user asked for an automatic update and no conflict is detected, replace `AGENTS.md` with the downloaded template.
+5. Re-run a rescan if needed so `.agents/` reflects the updated protocol, then run a lightweight validation such as `git diff --check`.
 
 ### When to Record
 
@@ -192,6 +203,7 @@ For `delete` / `merge`, include the original title, involved paths/assets, and r
 - Record durable results of each meaningful task in `.agents/` with a changelog entry.
 - Keep related artifacts in sync when changing real project behavior or meaning.
 - For time-sensitive facts (versions, APIs, laws, pricing, library behavior, public claims), use current docs or search results.
+- Before committing, list and inspect the intended changes, confirm the commit scope is limited to the task, and run available project validation that fits the change or report why validation was not run.
 
 **Must not do:**
 
