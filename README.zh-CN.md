@@ -1,7 +1,7 @@
-<h1 align="center">agentrc</h1>
+<h1 align="center">AgentGo</h1>
 
 <p align="center">
-  <strong>AI Agent 的开箱即用指南。</strong>
+  <strong>放入一份 AGENTS.md，让项目马上 agent-ready。</strong>
 </p>
 
 <p align="center">
@@ -25,7 +25,7 @@
   <img src="https://img.shields.io/badge/Copilot-兼容-lightgrey?logo=github" alt="Copilot">
   <img src="https://img.shields.io/badge/Windsurf-兼容-teal" alt="Windsurf">
   <img src="https://img.shields.io/badge/Gemini_CLI-兼容-yellow?logo=google" alt="Gemini CLI">
-  <img src="https://img.shields.io/github/license/yeasy/agentrc" alt="License">
+  <img src="https://img.shields.io/github/license/yeasy/agentgo" alt="License">
 </p>
 
 ---
@@ -38,9 +38,9 @@
 - Claude Code / Codex / Cursor / Copilot / Windsurf / Gemini 各有一套配置格式，规则反复抄
 - 写完一遍项目约定，知识又跟着聊天记录走，记忆越长越多噪音
 
-**agentrc 给你的：** 一份稳定的 [AGENTS.md 协议](https://raw.githubusercontent.com/yeasy/agentrc/main/AGENTS.zh-CN.md) 加一个自适应 `.agents/` 项目层。把 `AGENTS.md` 放进任何项目根目录；当项目工作需要适配或持久记忆时，Agent 自动创建 `.agents/`，每次有意义工作后记录持久项目知识，且无需为该项目修改 `AGENTS.md` 本体。
+**AgentGo 给你的：** 一份稳定的 [AGENTS.md 协议](https://raw.githubusercontent.com/yeasy/agentgo/main/AGENTS.zh-CN.md) 加一个自适应 `.agents/` 项目层。把 `AGENTS.md` 放进任何项目根目录；当项目工作需要适配或持久记忆时，Agent 自动创建 `.agents/`，每次有意义工作后记录持久项目知识，且无需为该项目修改 `AGENTS.md` 本体。
 
-|           | 没有 agentrc                     | 有 agentrc                      |
+|           | 没有 AgentGo                     | 有 AgentGo                      |
 |:----------|:--------------------------------|:--------------------------------|
 | **跨工具复用** | 每个工具一份 rules，换工作区还要重写         | 一份 `AGENTS.md` 跟着项目走，全工具通用      |
 | **最佳实践**  | 散落各处，每个项目重新研究                   | 开箱即用：约定、流程、安全、维护节奏              |
@@ -52,10 +52,10 @@
 
 ## 快速开始
 
-只需一步，把 [AGENTS.zh-CN.md](https://github.com/yeasy/agentrc/blob/main/AGENTS.zh-CN.md) 下载到项目根目录并保存为 `AGENTS.md`（AGENTS 规范要求文件名固定）：
+只需一步，把 [AGENTS.zh-CN.md](https://github.com/yeasy/agentgo/blob/main/AGENTS.zh-CN.md) 下载到项目根目录并保存为 `AGENTS.md`（AGENTS 规范要求文件名固定）：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/yeasy/agentrc/main/AGENTS.zh-CN.md -o AGENTS.md
+curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/main/AGENTS.zh-CN.md -o AGENTS.md
 ```
 
 然后重新打开支持 AGENTS.md 的 Agent；对使用其他文件名的工具，按下方兼容性说明加一个很小的别名或 import。当项目工作需要适配或持久记忆时，Agent 会自动 bootstrap `.agents/`。
@@ -82,7 +82,7 @@ curl -fsSL https://raw.githubusercontent.com/yeasy/agentrc/main/AGENTS.zh-CN.md 
 
 ## 失败与恢复
 
-agentrc 要求 Agent 在正常路径失败时显式降级：
+AgentGo 要求 Agent 在正常路径失败时显式降级：
 
 | 场景 | 预期行为 |
 |:--|:--|
@@ -182,7 +182,7 @@ your-project/
 
 `AGENTS.md` 是 [开放格式](https://agents.md/)，来自 AI Agent 生态的协作，现在由 Agentic AI Foundation steward。各工具的真实支持情况：
 
-| 工具 | 如何使用 agentrc |
+| 工具 | 如何使用 AgentGo |
 |:--|:--|
 | **OpenAI Codex** | 读取仓库里的 `AGENTS.md` 指令。 |
 | **GitHub Copilot coding agent** | 读取仓库树中最近的 `AGENTS.md`。 |
@@ -268,14 +268,14 @@ your-project/
 <details>
 <summary><strong>可以自定义约定吗？</strong></summary>
 
-可以，但它是人类维护的稳定协议。agentrc 默认设计是：Agent 不为项目适配改写 `AGENTS.md`，而是把项目特定发现写入 `.agents/`。如果你想改通用规则，可以直接编辑 `AGENTS.md`。
+可以，但它是人类维护的稳定协议。AgentGo 默认设计是：Agent 不为项目适配改写 `AGENTS.md`，而是把项目特定发现写入 `.agents/`。如果你想改通用规则，可以直接编辑 `AGENTS.md`。
 
 </details>
 
 <details>
 <summary><strong>已有项目配置很复杂怎么办？</strong></summary>
 
-agentrc 天生就是为已有项目设计的。bootstrap 或重新扫描时，Agent 会发现现有配置文件（`.cursorrules`、`CLAUDE.md`、`.windsurfrules` 等）和自定义项目说明（`rules.md`、`reports.md`、`project.md`、`spec.md`、`design.md`、`brief.md`、`notes.md` 等）。活跃文档保留原位，并索引到 `.agents/memory/source-index.md`；可复用知识提取到 `.agents/`。**是否归档过时文件由你决定**——Agent 会列出发现清单和归档建议，等你确认后再移动任何文件。不会擅自删改任何东西。
+AgentGo 天生就是为已有项目设计的。bootstrap 或重新扫描时，Agent 会发现现有配置文件（`.cursorrules`、`CLAUDE.md`、`.windsurfrules` 等）和自定义项目说明（`rules.md`、`reports.md`、`project.md`、`spec.md`、`design.md`、`brief.md`、`notes.md` 等）。活跃文档保留原位，并索引到 `.agents/memory/source-index.md`；可复用知识提取到 `.agents/`。**是否归档过时文件由你决定**——Agent 会列出发现清单和归档建议，等你确认后再移动任何文件。不会擅自删改任何东西。
 
 </details>
 
@@ -337,9 +337,9 @@ bootstrap 时，`rules.md`、`reports.md`、`project.md`、`spec.md`、`design.m
 </details>
 
 <details>
-<summary><strong>为什么 agentrc 仓库自己没有 .agents/？</strong></summary>
+<summary><strong>为什么 AgentGo 仓库自己没有 .agents/？</strong></summary>
 
-agentrc 仓库的交付物**就是 AGENTS.md 协议本身**，这里没有下游项目记忆需要提交，所以不提交 `.agents/`。把 `AGENTS.md` 放进**你的**项目后，当项目工作首次需要适配或持久记忆时，Agent 会创建 `.agents/`。
+AgentGo 仓库的交付物**就是 AGENTS.md 协议本身**，这里没有下游项目记忆需要提交，所以不提交 `.agents/`。把 `AGENTS.md` 放进**你的**项目后，当项目工作首次需要适配或持久记忆时，Agent 会创建 `.agents/`。
 
 </details>
 
@@ -364,9 +364,9 @@ agentrc 仓库的交付物**就是 AGENTS.md 协议本身**，这里没有下游
 
 ## Star History
 
-如果 agentrc 对你的项目有帮助，欢迎点个 Star——帮助更多人发现它。
+如果 AgentGo 对你的项目有帮助，欢迎点个 Star——帮助更多人发现它。
 
-[![Star History Chart](https://api.star-history.com/svg?repos=yeasy/agentrc&type=Date)](https://star-history.com/#yeasy/agentrc&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=yeasy/agentgo&type=Date)](https://star-history.com/#yeasy/agentgo&Date)
 
 ---
 

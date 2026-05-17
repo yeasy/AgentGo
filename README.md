@@ -1,7 +1,7 @@
-<h1 align="center">agentrc</h1>
+<h1 align="center">AgentGo</h1>
 
 <p align="center">
-  <strong>The drop-in guide for AI agents.</strong>
+  <strong>Drop in one AGENTS.md. Go agent-ready.</strong>
 </p>
 
 <p align="center">
@@ -25,7 +25,7 @@
   <img src="https://img.shields.io/badge/Copilot-compatible-lightgrey?logo=github" alt="Copilot">
   <img src="https://img.shields.io/badge/Windsurf-compatible-teal" alt="Windsurf">
   <img src="https://img.shields.io/badge/Gemini_CLI-compatible-yellow?logo=google" alt="Gemini CLI">
-  <img src="https://img.shields.io/github/license/yeasy/agentrc" alt="License">
+  <img src="https://img.shields.io/github/license/yeasy/agentgo" alt="License">
 </p>
 
 ---
@@ -38,9 +38,9 @@ Models are already capable enough. What actually blocks product quality is **how
 - Claude Code / Codex / Cursor / Copilot / Windsurf / Gemini each have their own config format, and the same rules get rewritten over and over
 - Once you do write down project conventions, the knowledge stays trapped in chat history; the longer the session, the more noise it accumulates
 
-**What agentrc gives you:** a stable [AGENTS.md protocol](https://raw.githubusercontent.com/yeasy/agentrc/main/AGENTS.md) plus an adaptive `.agents/` project layer. Drop `AGENTS.md` into any project root; the agent creates `.agents/` when project work needs adaptation or durable memory, records durable project knowledge after meaningful work, and never needs to edit `AGENTS.md` for that project.
+**What AgentGo gives you:** a stable [AGENTS.md protocol](https://raw.githubusercontent.com/yeasy/agentgo/main/AGENTS.md) plus an adaptive `.agents/` project layer. Drop `AGENTS.md` into any project root; the agent creates `.agents/` when project work needs adaptation or durable memory, records durable project knowledge after meaningful work, and never needs to edit `AGENTS.md` for that project.
 
-|                          | Without agentrc                                | With agentrc                                          |
+|                          | Without AgentGo                                | With AgentGo                                          |
 |:-------------------------|:-----------------------------------------------|:------------------------------------------------------|
 | **Cross-tool reuse**     | One ruleset per tool, rewrite when you switch workspace | One `AGENTS.md` travels with the project, works everywhere |
 | **Best practices**       | Scattered, re-researched per project           | Out of the box: conventions, flow, safety, upkeep cadence |
@@ -52,10 +52,10 @@ Models are already capable enough. What actually blocks product quality is **how
 
 ## Getting Started
 
-One step: download [AGENTS.md](https://github.com/yeasy/agentrc/blob/main/AGENTS.md) into your project root.
+One step: download [AGENTS.md](https://github.com/yeasy/agentgo/blob/main/AGENTS.md) into your project root.
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/yeasy/agentrc/main/AGENTS.md -o AGENTS.md
+curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/main/AGENTS.md -o AGENTS.md
 ```
 
 Then reopen an AGENTS.md-aware agent, or add the small alias/import shown in the compatibility section for tools that use another filename. When project work needs adaptation or durable memory, the agent bootstraps `.agents/` automatically.
@@ -82,7 +82,7 @@ From then on, every session begins with the agent reading `.agents/` before doin
 
 ## Failure and Recovery
 
-agentrc expects agents to degrade visibly when the happy path breaks:
+AgentGo expects agents to degrade visibly when the happy path breaks:
 
 | Situation | Expected behavior |
 |:--|:--|
@@ -182,7 +182,7 @@ your-project/
 
 `AGENTS.md` is an [open format](https://agents.md/) that emerged from collaboration across the AI agent ecosystem and is now stewarded by the Agentic AI Foundation. Real support across tools:
 
-| Tool | How to use agentrc |
+| Tool | How to use AgentGo |
 |:--|:--|
 | **OpenAI Codex** | Reads repository `AGENTS.md` instructions. |
 | **GitHub Copilot coding agent** | Reads the nearest `AGENTS.md` in the repository tree. |
@@ -268,14 +268,14 @@ Different tools reading the same `AGENTS.md` and keeping their own session state
 <details>
 <summary><strong>Can I customize the conventions?</strong></summary>
 
-Yes — as a human-maintained protocol. The default agentrc design is that agents do not rewrite `AGENTS.md` during project adaptation; they write project-specific findings into `.agents/`. If you want different universal rules, edit `AGENTS.md` directly.
+Yes — as a human-maintained protocol. The default AgentGo design is that agents do not rewrite `AGENTS.md` during project adaptation; they write project-specific findings into `.agents/`. If you want different universal rules, edit `AGENTS.md` directly.
 
 </details>
 
 <details>
 <summary><strong>What if my project already has lots of agent config?</strong></summary>
 
-agentrc is built for brownfield projects from day one. During bootstrap or rescan, the agent discovers existing config files (`.cursorrules`, `CLAUDE.md`, `.windsurfrules`, etc.) and custom project docs (`rules.md`, `reports.md`, `project.md`, `spec.md`, `design.md`, `brief.md`, `notes.md`, and similar). Active docs stay in place and are indexed in `.agents/memory/source-index.md`; reusable knowledge is extracted into `.agents/`. **Whether to archive obsolete files is your call** — the agent reports a discovery list and a proposed archive plan, then waits for your confirmation before moving anything. Nothing is silently deleted or modified.
+AgentGo is built for brownfield projects from day one. During bootstrap or rescan, the agent discovers existing config files (`.cursorrules`, `CLAUDE.md`, `.windsurfrules`, etc.) and custom project docs (`rules.md`, `reports.md`, `project.md`, `spec.md`, `design.md`, `brief.md`, `notes.md`, and similar). Active docs stay in place and are indexed in `.agents/memory/source-index.md`; reusable knowledge is extracted into `.agents/`. **Whether to archive obsolete files is your call** — the agent reports a discovery list and a proposed archive plan, then waits for your confirmation before moving anything. Nothing is silently deleted or modified.
 
 </details>
 
@@ -337,9 +337,9 @@ Drop one `AGENTS.md` in each major subproject root for AGENTS.md-aware tools. Pu
 </details>
 
 <details>
-<summary><strong>Why doesn't the agentrc repo have its own .agents/?</strong></summary>
+<summary><strong>Why doesn't the AgentGo repo have its own .agents/?</strong></summary>
 
-The agentrc repo's deliverable **is the AGENTS.md protocol itself** — there's no downstream project memory to commit here, so no `.agents/` is committed. Drop `AGENTS.md` into **your** project and the agent will create `.agents/` there when project work first needs adaptation or durable memory.
+The AgentGo repo's deliverable **is the AGENTS.md protocol itself** — there's no downstream project memory to commit here, so no `.agents/` is committed. Drop `AGENTS.md` into **your** project and the agent will create `.agents/` there when project work first needs adaptation or durable memory.
 
 </details>
 
@@ -364,9 +364,9 @@ Contributions welcome! The goal is to stay lean and generic — if a change does
 
 ## Star History
 
-If agentrc helps your projects, please leave a Star — it helps more people find it.
+If AgentGo helps your projects, please leave a Star — it helps more people find it.
 
-[![Star History Chart](https://api.star-history.com/svg?repos=yeasy/agentrc&type=Date)](https://star-history.com/#yeasy/agentrc&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=yeasy/agentgo&type=Date)](https://star-history.com/#yeasy/agentgo&Date)
 
 ---
 

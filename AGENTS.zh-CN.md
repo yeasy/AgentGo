@@ -1,4 +1,4 @@
-<!-- AGENTS.md v1.2.0 | agentrc | https://github.com/yeasy/agentrc -->
+<!-- AGENTS.md v1.2.0 | AgentGo | https://github.com/yeasy/agentgo -->
 <!-- Compatible with AGENTS.md-aware agents; use aliases/imports for tools that require CLAUDE.md or GEMINI.md. -->
 
 # AGENTS.md
@@ -204,6 +204,6 @@ YYYY-MM-DDTHH:MM:SSZ | <agent>:<session> | <op|event> | <file path or artifact> 
 ---
 
 <!--
-agentrc · https://github.com/yeasy/agentrc
+AgentGo · https://github.com/yeasy/agentgo
 设计理念：AGENTS.md 放稳定协议，.agents/ 放项目适配记忆。
 -->

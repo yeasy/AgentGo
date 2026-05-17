@@ -1,4 +1,4 @@
-<!-- AGENTS.md v1.2.0 | agentrc | https://github.com/yeasy/agentrc -->
+<!-- AGENTS.md v1.2.0 | AgentGo | https://github.com/yeasy/agentgo -->
 <!-- Compatible with AGENTS.md-aware agents; use aliases/imports for tools that require CLAUDE.md or GEMINI.md. -->
 
 # AGENTS.md
@@ -202,6 +202,6 @@ For `delete` / `merge`, include the original title, involved paths/assets, and r
 ---
 
 <!--
-agentrc · https://github.com/yeasy/agentrc
+AgentGo · https://github.com/yeasy/agentgo
 Design philosophy: stable protocol in AGENTS.md, adaptive project memory in .agents/.
 -->
