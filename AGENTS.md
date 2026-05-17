@@ -52,6 +52,7 @@ If normal startup or maintenance cannot complete, degrade explicitly instead of 
 6. **Complex work loops**: for high-risk or cross-artifact tasks, investigate, plan, execute the smallest necessary change, then evaluate correctness, risk, validation, maintainability, and user impact. Iterate until deliverable.
 7. **Evidence-based completion**: choose validation that fits the artifact: tests/builds for code, render/export/link checks for docs and slides, visual QA for design, source checks for research, schema/recalculation checks for data.
 8. **Precise analysis**: cite exact file paths and line numbers, pages, frames, sheets, or asset names when proposing plans, trade-offs, or review findings.
+9. **Relevant best practices**: apply domain-specific best practices when they directly improve correctness, safety, maintainability, accessibility, or user outcomes. Explain material trade-offs and keep the change scoped to the task.
 
 ## Working Modes
 
@@ -67,6 +68,7 @@ Work normally. As the project evolves, accumulate durable context:
 - Review findings -> `.agents/memory/review-findings.md`
 - Open items -> `.agents/memory/open-items.md`
 - Reusable workflows -> `.agents/workflows/`
+- Runtime-supported skills -> `.agents/skills/` when useful
 
 ### Existing Projects
 
@@ -109,6 +111,8 @@ Use progressive understanding. Do not map the whole project unless the task requ
 │   └── ...
 ├── workflows/
 │   └── ...
+├── skills/
+│   └── ...        # Optional; only for agent runtimes that support repo-scoped skills
 ├── archive/
 │   └── ...
 └── changelog.md
@@ -122,9 +126,10 @@ Use progressive understanding. Do not map the whole project unless the task requ
 | Create / update `memory/` | Free | Record durable project facts, decisions, pitfalls, findings, and open items. |
 | Create / update `rules/` | Free | Extract stable conventions from artifacts and config. |
 | Create / update `workflows/` | Free | Codify recurring multi-step operations. |
+| Create / update `skills/` | Free | Optional; create focused, runtime-supported skills for repeatable workflows with clear triggers, inputs, outputs, and validation. Skills must not override this file, source priority, or confirmation rules. |
 | Modify `AGENTS.md` | Restricted | Do not modify this file for project adaptation. Edit it only when the user's task is specifically to change AGENTS.md itself. |
 | Merge / rewrite / delete `memory/` | Free | Keep notes accurate; leave a changelog trace. |
-| Delete `rules/` or `workflows/` | Requires confirmation | These affect future agent behavior. |
+| Delete `rules/`, `workflows/`, or `skills/` | Requires confirmation | These affect future agent behavior. |
 
 ### When to Record
 
@@ -138,6 +143,7 @@ Use compact entries with `date`, `artifact`, `note`, `evidence`, `status`, and `
 - Review findings and suggested fixes -> `memory/review-findings.md`
 - Unresolved questions or deferred work -> `memory/open-items.md`
 - Complex operations executed -> `workflows/`
+- Repeatable workflows with clear triggers, inputs, outputs, and validation -> `workflows/`; if the project and agent runtime support repo-scoped skills, create or update a focused skill under `skills/` when useful.
 
 ### Maintenance Cadence
 

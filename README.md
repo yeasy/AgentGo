@@ -1,11 +1,11 @@
 <h1 align="center">AgentGo</h1>
 
 <p align="center">
-  <strong>Drop in one AGENTS.md. Go agent-ready.</strong>
+  <strong>One AGENTS.md makes any project agent-ready.</strong>
 </p>
 
 <p align="center">
-  <sub>Best practices baked in — works in every project.</sub>
+  <sub>Best practices baked in. No custom setup required.</sub>
 </p>
 
 <p align="center">English | <a href="./README.zh-CN.md">简体中文</a></p>
@@ -133,7 +133,7 @@ flowchart LR
     style D fill:#B45309,color:#fff
 ```
 
-New findings are filed by type: source document inventory → `memory/source-index.md`, project conventions → `rules/`, decisions → `memory/decisions.md`, gotchas → `memory/gotchas.md`, reusable patterns → `memory/patterns.md`, review findings → `memory/review-findings.md`, and unresolved work → `memory/open-items.md`. After each meaningful task, the agent records durable results and appends `.agents/changelog.md`. The maintenance cadence is enforced by `AGENTS.md` itself — **easy to write in, hard to stay** — so notes never pile up into noise.
+New findings are filed by type: source document inventory → `memory/source-index.md`, project conventions → `rules/`, decisions → `memory/decisions.md`, gotchas → `memory/gotchas.md`, reusable patterns → `memory/patterns.md`, reusable workflows → `workflows/`, runtime-supported skills → `skills/` when useful, review findings → `memory/review-findings.md`, and unresolved work → `memory/open-items.md`. After each meaningful task, the agent records durable results and appends `.agents/changelog.md`. The maintenance cadence is enforced by `AGENTS.md` itself — **easy to write in, hard to stay** — so notes never pile up into noise.
 
 Recommended memory entry shape: `date`, `artifact`, `note`, `evidence`, `status`, and `next action`. The project does not need git; when no git repository exists, `.agents/changelog.md` still acts as the local audit trail.
 
@@ -170,6 +170,7 @@ your-project/
 │   ├── memory/            # Project overview, decisions, findings, open items
 │   ├── rules/             # Project conventions extracted from artifacts/config
 │   ├── workflows/         # Standard operating procedures for recurring flows
+│   ├── skills/            # Optional repo-scoped skills for supporting runtimes
 │   ├── archive/           # Obsolete agent-only configs, only after confirmation
 │   └── changelog.md       # Audit log of changes to .agents/
 ├── docs/archive/          ← Optional human-doc archive, only if the project uses it
@@ -211,6 +212,7 @@ A clear boundary between human control and agent autonomy:
 | Project notes, decisions, gotchas | `memory/` | Agent writes, merges, prunes freely |
 | Project conventions and reusable patterns | `rules/` | Agent writes freely; deletion needs user confirmation |
 | Complex workflows | `workflows/` | Agent writes freely; deletion needs user confirmation |
+| Runtime-supported skills | `skills/` | Optional focused workflows; deletion needs user confirmation |
 | Source document inventory | `.agents/memory/source-index.md` | Agent indexes active project references |
 | Obsolete agent-only configs | `.agents/archive/` | **Archived only after user confirmation** |
 | Obsolete human-facing docs | Project docs archive, e.g. `docs/archive/` | **Archived only after user confirmation** |
@@ -239,7 +241,7 @@ A clear boundary between human control and agent autonomy:
 <details>
 <summary><strong>Should I commit .agents/ to git?</strong></summary>
 
-It depends. For personal projects, gitignore the whole `.agents/` — it's your private working memory. For team projects, commit static config (`rules/`, `workflows/`) to share team conventions, but gitignore dynamic data (`memory/`) since it's session-level. `AGENTS.md` itself should always be committed — it's the contract between project and agent.
+It depends. For personal projects, gitignore the whole `.agents/` — it's your private working memory. For team projects, commit static config (`rules/`, `workflows/`, optionally `skills/`) to share team conventions, but gitignore dynamic data (`memory/`) since it's session-level. `AGENTS.md` itself should always be committed — it's the contract between project and agent.
 
 Common team pattern:
 ```gitignore
