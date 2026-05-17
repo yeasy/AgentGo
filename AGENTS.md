@@ -3,8 +3,6 @@
 
 # AGENTS.md
 
-> [English](./AGENTS.md) · [简体中文](./AGENTS.zh-CN.md)
-
 ## Purpose
 
 This file is a stable operating protocol for AI project agents. It should work unchanged in any repository or project folder, whether the work is software, documentation, design, research, operations, data, or mixed media. Project-specific facts, commands, conventions, decisions, review findings, and working notes belong under `.agents/`, not in this file.
