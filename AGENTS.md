@@ -89,6 +89,14 @@ Use progressive understanding. Do not map the whole project unless the task requ
 7. **Be transparent**: surface uncertainty, blockers, and problems found during execution.
 8. **Respect others' changes**: preserve unrelated workspace changes. Before editing overlapping files, inspect whether existing changes conflict with the task, and avoid overwriting them blindly. If a conflict blocks the task, escalate.
 
+## Review Requests
+
+When the user asks for a review, default to a read-only review unless they explicitly ask for fixes. First identify the review scope: uncommitted diff, commit range, pull request, files, directories, or whole-project review. If the scope is ambiguous, ask before expanding it.
+
+Lead with findings ordered by severity. Each finding should include precise evidence such as file paths and line numbers, the concrete risk or failure mode, and a suggested fix direction. Separate confirmed issues from assumptions, questions, residual risks, and style suggestions. If no issues are found, say so clearly and mention any remaining test or validation gaps.
+
+For large, complex, visual, or cross-artifact reviews, offer to create a review report under `.agents/reports/`, such as `.agents/reports/review-<date>.html` or `.agents/reports/review-<scope>.md`; create it directly when the user asks for a shareable artifact. HTML or visual diff reports should optimize reviewer readability: group changes by file and purpose, show enough context to understand each change, and explain the reason for every diff hunk or change block. Keep generated reports out of commits unless the user explicitly asks. Redact secrets and avoid embedding sensitive source excerpts beyond what is needed to explain findings.
+
 ## Self-Evolution Protocol
 
 `.agents/` is the project adaptation layer. It is created when project work first needs adaptation or durable memory, then kept current after each meaningful task.
@@ -111,6 +119,8 @@ Use progressive understanding. Do not map the whole project unless the task requ
 │   └── ...
 ├── workflows/
 │   └── ...
+├── reports/
+│   └── ...        # Generated review reports and temporary human-readable outputs; not for commit by default.
 ├── skills/
 │   └── ...        # Optional; only for agent runtimes that support repo-scoped skills
 ├── archive/
@@ -126,6 +136,7 @@ Use progressive understanding. Do not map the whole project unless the task requ
 | Create / update `memory/` | Free | Record durable project facts, decisions, pitfalls, findings, and open items. |
 | Create / update `rules/` | Free | Extract stable conventions from artifacts and config. |
 | Create / update `workflows/` | Free | Codify recurring multi-step operations. |
+| Create / update `reports/` | Free | Store generated review reports and temporary human-readable outputs; keep them out of commits unless explicitly requested. |
 | Create / update `skills/` | Free | Optional; create focused, runtime-supported skills for repeatable workflows with clear triggers, inputs, outputs, and validation. Skills must not override this file, source priority, or confirmation rules. |
 | Modify `AGENTS.md` | Restricted | Do not modify this file for project adaptation. Edit it only when the user's task is specifically to change AGENTS.md itself. |
 | Merge / rewrite / delete `memory/` | Free | Keep notes accurate; leave a changelog trace. |
@@ -155,6 +166,7 @@ Use compact entries with `date`, `artifact`, `note`, `evidence`, `status`, and `
 - Credential, secret, session, or PII requirements without values -> `memory/secret-requirements.md`
 - Complex operations executed -> `workflows/`
 - Authenticated test procedures, including secret names and git-ignored state paths -> `workflows/`
+- Generated review reports, visual diffs, and temporary human-readable outputs -> `reports/`
 - Repeatable workflows with clear triggers, inputs, outputs, and validation -> `workflows/`; if the project and agent runtime support repo-scoped skills, create or update a focused skill under `skills/` when useful.
 
 ### Maintenance Cadence

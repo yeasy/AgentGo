@@ -133,7 +133,7 @@ flowchart LR
     style D fill:#B45309,color:#fff
 ```
 
-新发现按类型归档：来源文档清单 → `memory/source-index.md`、项目约定 → `rules/`、决策 → `memory/decisions.md`、踩坑 → `memory/gotchas.md`、可复用模式 → `memory/patterns.md`、可复用流程 → `workflows/`、运行时支持的 skills → `skills/`（确有帮助时）、审阅发现 → `memory/review-findings.md`、未决事项 → `memory/open-items.md`。每次有意义任务后，Agent 记录持久结果并追加 `.agents/changelog.md`。维护节奏由 `AGENTS.md` 强制——**写入容易，留下来要难**，避免笔记越攒越多变成噪音。
+新发现按类型归档：来源文档清单 → `memory/source-index.md`、项目约定 → `rules/`、决策 → `memory/decisions.md`、踩坑 → `memory/gotchas.md`、可复用模式 → `memory/patterns.md`、可复用流程 → `workflows/`、生成的审阅报告 → `reports/`、运行时支持的 skills → `skills/`（确有帮助时）、审阅发现 → `memory/review-findings.md`、不含真实值的敏感信息需求 → `memory/secret-requirements.md`、未决事项 → `memory/open-items.md`。每次有意义任务后，Agent 记录持久结果并追加 `.agents/changelog.md`。维护节奏由 `AGENTS.md` 强制——**写入容易，留下来要难**，避免笔记越攒越多变成噪音。
 
 推荐记忆条目字段：`date`、`artifact`、`note`、`evidence`、`status`、`next action`。项目不需要必须使用 git；没有 git 仓库时，`.agents/changelog.md` 仍作为本地审计记录。
 
@@ -170,6 +170,7 @@ your-project/
 │   ├── memory/            # 项目概览、决策记录、审阅发现、未决事项
 │   ├── rules/             # 从产物/配置中提取的项目约定
 │   ├── workflows/         # 重复流程的标准操作手册
+│   ├── reports/           # 生成的审阅报告，默认不提交
 │   ├── skills/            # 可选；供支持的运行时使用的仓库级 skills
 │   ├── archive/           # 确认后归档的旧 agent 专用配置
 │   └── changelog.md       # .agents/ 的变更审计日志
@@ -212,8 +213,10 @@ your-project/
 | 项目笔记、决策、踩坑记录 | `memory/` | Agent 自由写入、合并、清理 |
 | 项目约定和可复用模式 | `rules/` | Agent 自由写入；删除需用户确认 |
 | 复杂流程 | `workflows/` | Agent 自由写入；删除需用户确认 |
+| 生成的审阅报告和可视化 diff | `reports/` | Agent 自由写入；默认不提交 |
 | 运行时支持的 skills | `skills/` | 可选的聚焦流程；删除需用户确认 |
 | 来源文档清单 | `.agents/memory/source-index.md` | Agent 索引活跃项目参考资料 |
+| 敏感信息需求 | `.agents/memory/secret-requirements.md` | 只记录名称、来源、范围和负责人；不记录真实值 |
 | 过时的 agent 专用配置 | `.agents/archive/` | **用户确认后**才归档 |
 | 过时的面向人文档 | 项目文档归档区，如 `docs/archive/` | **用户确认后**才归档 |
 | 项目元信息、审阅发现和记忆 | `.agents/` | Agent 首次需要时创建，并在有意义工作后更新 |

@@ -133,7 +133,7 @@ flowchart LR
     style D fill:#B45309,color:#fff
 ```
 
-New findings are filed by type: source document inventory → `memory/source-index.md`, project conventions → `rules/`, decisions → `memory/decisions.md`, gotchas → `memory/gotchas.md`, reusable patterns → `memory/patterns.md`, reusable workflows → `workflows/`, runtime-supported skills → `skills/` when useful, review findings → `memory/review-findings.md`, and unresolved work → `memory/open-items.md`. After each meaningful task, the agent records durable results and appends `.agents/changelog.md`. The maintenance cadence is enforced by `AGENTS.md` itself — **easy to write in, hard to stay** — so notes never pile up into noise.
+New findings are filed by type: source document inventory → `memory/source-index.md`, project conventions → `rules/`, decisions → `memory/decisions.md`, gotchas → `memory/gotchas.md`, reusable patterns → `memory/patterns.md`, reusable workflows → `workflows/`, generated review reports → `reports/`, runtime-supported skills → `skills/` when useful, review findings → `memory/review-findings.md`, secret requirements without values → `memory/secret-requirements.md`, and unresolved work → `memory/open-items.md`. After each meaningful task, the agent records durable results and appends `.agents/changelog.md`. The maintenance cadence is enforced by `AGENTS.md` itself — **easy to write in, hard to stay** — so notes never pile up into noise.
 
 Recommended memory entry shape: `date`, `artifact`, `note`, `evidence`, `status`, and `next action`. The project does not need git; when no git repository exists, `.agents/changelog.md` still acts as the local audit trail.
 
@@ -170,6 +170,7 @@ your-project/
 │   ├── memory/            # Project overview, decisions, findings, open items
 │   ├── rules/             # Project conventions extracted from artifacts/config
 │   ├── workflows/         # Standard operating procedures for recurring flows
+│   ├── reports/           # Generated review reports, not committed by default
 │   ├── skills/            # Optional repo-scoped skills for supporting runtimes
 │   ├── archive/           # Obsolete agent-only configs, only after confirmation
 │   └── changelog.md       # Audit log of changes to .agents/
@@ -212,8 +213,10 @@ A clear boundary between human control and agent autonomy:
 | Project notes, decisions, gotchas | `memory/` | Agent writes, merges, prunes freely |
 | Project conventions and reusable patterns | `rules/` | Agent writes freely; deletion needs user confirmation |
 | Complex workflows | `workflows/` | Agent writes freely; deletion needs user confirmation |
+| Generated review reports and visual diffs | `reports/` | Agent writes freely; not committed by default |
 | Runtime-supported skills | `skills/` | Optional focused workflows; deletion needs user confirmation |
 | Source document inventory | `.agents/memory/source-index.md` | Agent indexes active project references |
+| Secret requirements | `.agents/memory/secret-requirements.md` | Names, sources, scopes, and owners only; no secret values |
 | Obsolete agent-only configs | `.agents/archive/` | **Archived only after user confirmation** |
 | Obsolete human-facing docs | Project docs archive, e.g. `docs/archive/` | **Archived only after user confirmation** |
 | Project metadata, review findings, and memory | `.agents/` | Agent creates when first needed and updates after meaningful work |
