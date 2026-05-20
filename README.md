@@ -120,20 +120,22 @@ flowchart LR
 
 `.agents/` is continuously maintained by the agent — **only useful entries stay; stale ones get pruned**:
 
-Text alternative: enter with current `.agents/` context, execute the task, record reusable findings in the right `.agents/` location, periodically merge or remove stale notes, then repeat on the next session.
+Text alternative: enter with current `.agents/` context, execute the task, record reusable findings and material outcomes in the right `.agents/` location, periodically run a health check that merges stale memory, promotes repeated workflows/skills, checks structure, and prunes scratch files, then repeat on the next session.
 
 ```mermaid
 flowchart LR
     A["Read .agents/\nEnter with project context"] --> B["Execute task"]
     B --> C["New findings\n→ write to right category"]
-    C --> D["Periodic review\nmerge / clean / drop stale"]
+    C --> D["Periodic health check\nmerge / promote / prune"]
     D --> A
 
     style A fill:#1565C0,color:#fff
     style D fill:#B45309,color:#fff
 ```
 
-New findings are filed by type: source document inventory → `memory/source-index.md`, project conventions → `rules/`, decisions → `memory/decisions.md`, gotchas → `memory/gotchas.md`, reusable patterns → `memory/patterns.md`, reusable workflows → `workflows/`, generated review reports → `reports/`, runtime-supported skills → `skills/` when useful, review findings → `memory/review-findings.md`, secret requirements without values → `memory/secret-requirements.md`, and unresolved work → `memory/open-items.md`. After each meaningful task, the agent records durable results and appends `.agents/changelog.md`. The maintenance cadence is enforced by `AGENTS.md` itself — **easy to write in, hard to stay** — so notes never pile up into noise.
+New findings are filed by type: source document inventory → `memory/source-index.md`, project conventions → `rules/`, decisions → `memory/decisions.md`, gotchas → `memory/gotchas.md`, reusable patterns → `memory/patterns.md`, outcomes and user corrections → `memory/outcomes.md`, reusable workflows → `workflows/`, generated review reports → `reports/`, candidate workflows/skills → `experiments/`, current-task scratch output → `tmp/`, runtime-supported skills → `skills/` when useful, review findings → `memory/review-findings.md`, secret requirements without values → `memory/secret-requirements.md`, and unresolved work → `memory/open-items.md`. After each meaningful task, the agent records durable results and appends `.agents/changelog.md`. The maintenance cadence is enforced by `AGENTS.md` itself — **easy to write in, hard to stay** — so notes never pile up into noise.
+
+Evolution is lifecycle-based: memory can be active, stale, deprecated, closed, or pinned; workflows and skills move from candidate to active to deprecated to archived. Health checks look for fitness signals such as fewer repeated mistakes, fewer user corrections, less stale context, higher validated reuse, and less repeated setup effort.
 
 Recommended memory entry shape: `date`, `artifact`, `note`, `evidence`, `status`, and `next action`. The project does not need git; when no git repository exists, `.agents/changelog.md` still acts as the local audit trail.
 
@@ -171,6 +173,8 @@ your-project/
 │   ├── rules/             # Project conventions extracted from artifacts/config
 │   ├── workflows/         # Standard operating procedures for recurring flows
 │   ├── reports/           # Generated review reports, not committed by default
+│   ├── experiments/       # Candidate workflows/skills before promotion
+│   ├── tmp/               # Scratch/intermediate files, pruned automatically
 │   ├── skills/            # Optional repo-scoped skills for supporting runtimes
 │   ├── archive/           # Obsolete agent-only configs, only after confirmation
 │   └── changelog.md       # Audit log of changes to .agents/
@@ -211,9 +215,12 @@ A clear boundary between human control and agent autonomy:
 | Content | Location | Permission |
 |:--------|:---------|:-----------|
 | Project notes, decisions, gotchas | `memory/` | Agent writes, merges, prunes freely |
+| Outcome ledger and user corrections | `memory/outcomes.md` | Agent records material results and feedback |
 | Project conventions and reusable patterns | `rules/` | Agent writes freely; deletion needs user confirmation |
 | Complex workflows | `workflows/` | Agent writes freely; deletion needs user confirmation |
 | Generated review reports and visual diffs | `reports/` | Agent writes freely; not committed by default |
+| Experiments and candidate skills/workflows | `experiments/` | Agent writes freely; deletion needs user confirmation |
+| Scratch/intermediate files | `tmp/` | Agent writes and prunes freely; not committed |
 | Runtime-supported skills | `skills/` | Optional focused workflows; deletion needs user confirmation |
 | Source document inventory | `.agents/memory/source-index.md` | Agent indexes active project references |
 | Secret requirements | `.agents/memory/secret-requirements.md` | Names, sources, scopes, and owners only; no secret values |
@@ -261,6 +268,8 @@ Common team pattern:
 
 Update only `AGENTS.md`; keep `.agents/` in place. `.agents/` is your project's local memory and should not be deleted or replaced during template updates.
 
+Keep the same language variant you installed. English projects should update from `AGENTS.md`; Simplified Chinese installs should update from `AGENTS.zh-CN.md`, still saved locally as `AGENTS.md`.
+
 If your local `AGENTS.md` has no project-specific edits:
 
 ```bash
@@ -280,6 +289,8 @@ To pin a stable release instead of tracking `main`:
 curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.0.0/AGENTS.md -o AGENTS.md
 ```
 
+Do not let an agent silently replace `AGENTS.md` on a timer. During `.agents/` maintenance, it may check for a newer AgentGo template and suggest an update, but replacement should still require your explicit request or approval. The first comment in `AGENTS.md` carries the template version, for example `AGENTS.md v1.3.0`; release tags are the stable install target.
+
 After updating, restart or rescan your agent:
 
 > **"Rescan this project per AGENTS.md. Keep the existing `.agents/`; report new or changed guidance without overwriting memory."**
@@ -289,7 +300,14 @@ After updating, restart or rescan your agent:
 <details>
 <summary><strong>Won't .agents/ keep growing and turn into noise?</strong></summary>
 
-It will, which is why `AGENTS.md` enforces a **maintenance cadence**: on session entry, validate that recent notes still match current project artifacts; clean up whenever any `memory/` file exceeds 200 lines, `changelog.md` has grown ≥ 30 lines since the last `[MAINTENANCE]`, 10 meaningful tasks have completed, or stale notes are found. Cleanup dedupes entries, closes resolved items, removes stale notes, and appends a `[MAINTENANCE]` changelog line.
+It will, which is why `AGENTS.md` enforces a **maintenance cadence**: on session entry, validate that recent notes still match current project artifacts; run a health check whenever any `memory/` file exceeds 200 lines, `changelog.md` has grown ≥ 30 lines since the last `[MAINTENANCE]`, 10 meaningful tasks have completed, stale notes are found, `.agents/` structure drifts, or `tmp/` contains stale scratch output. Maintenance dedupes entries, closes resolved items, removes stale notes, records fitness signals, promotes repeated validated procedures into `workflows/` or supported `skills/`, prunes `tmp/`, and can generate `reports/health-<date>.md` for non-trivial cleanups.
+
+</details>
+
+<details>
+<summary><strong>Will the agent proactively suggest improvements?</strong></summary>
+
+Yes, but only as optional follow-up. When the agent has clear evidence that an out-of-scope improvement would likely help, it should briefly explain the suggestion, rationale, and risk, then wait. It should not execute optional suggestions without your request, and it should not distract you with low-confidence ideas.
 
 </details>
 

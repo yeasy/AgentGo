@@ -120,20 +120,22 @@ flowchart LR
 
 `.agents/` 由 Agent 持续维护，**只留有用的，定期清理失效的**：
 
-文字替代：带着当前 `.agents/` 上下文进入，执行任务，把可复用发现写入正确的 `.agents/` 位置，定期合并或删除失效笔记，然后在下一次会话重复。
+文字替代：带着当前 `.agents/` 上下文进入，执行任务，把可复用发现和重要结果写入正确的 `.agents/` 位置，定期执行体检：合并失效记忆、提升重复 workflow/skill、检查结构、清理草稿文件，然后在下一次会话重复。
 
 ```mermaid
 flowchart LR
     A["读 .agents/\n带项目上下文进入"] --> B["执行任务"]
     B --> C["新发现\n→ 写入对应分类"]
-    C --> D["定期回顾\n合并/清理/失效删除"]
+    C --> D["定期体检\n合并/提升/清理"]
     D --> A
 
     style A fill:#1565C0,color:#fff
     style D fill:#B45309,color:#fff
 ```
 
-新发现按类型归档：来源文档清单 → `memory/source-index.md`、项目约定 → `rules/`、决策 → `memory/decisions.md`、踩坑 → `memory/gotchas.md`、可复用模式 → `memory/patterns.md`、可复用流程 → `workflows/`、生成的审阅报告 → `reports/`、运行时支持的 skills → `skills/`（确有帮助时）、审阅发现 → `memory/review-findings.md`、不含真实值的敏感信息需求 → `memory/secret-requirements.md`、未决事项 → `memory/open-items.md`。每次有意义任务后，Agent 记录持久结果并追加 `.agents/changelog.md`。维护节奏由 `AGENTS.md` 强制——**写入容易，留下来要难**，避免笔记越攒越多变成噪音。
+新发现按类型归档：来源文档清单 → `memory/source-index.md`、项目约定 → `rules/`、决策 → `memory/decisions.md`、踩坑 → `memory/gotchas.md`、可复用模式 → `memory/patterns.md`、结果和用户纠正 → `memory/outcomes.md`、可复用流程 → `workflows/`、生成的审阅报告 → `reports/`、候选 workflow/skill → `experiments/`、当前任务草稿输出 → `tmp/`、运行时支持的 skills → `skills/`（确有帮助时）、审阅发现 → `memory/review-findings.md`、不含真实值的敏感信息需求 → `memory/secret-requirements.md`、未决事项 → `memory/open-items.md`。每次有意义任务后，Agent 记录持久结果并追加 `.agents/changelog.md`。维护节奏由 `AGENTS.md` 强制——**写入容易，留下来要难**，避免笔记越攒越多变成噪音。
+
+进化按生命周期管理：记忆可以是 active、stale、deprecated、closed 或 pinned；workflow 和 skill 从 candidate 进入 active，再到 deprecated 或 archived。体检会关注适应度信号：重复错误是否减少、用户纠正是否减少、失效上下文是否减少、已验证复用是否增加、重复配置成本是否降低。
 
 推荐记忆条目字段：`date`、`artifact`、`note`、`evidence`、`status`、`next action`。项目不需要必须使用 git；没有 git 仓库时，`.agents/changelog.md` 仍作为本地审计记录。
 
@@ -171,6 +173,8 @@ your-project/
 │   ├── rules/             # 从产物/配置中提取的项目约定
 │   ├── workflows/         # 重复流程的标准操作手册
 │   ├── reports/           # 生成的审阅报告，默认不提交
+│   ├── experiments/       # 提升前的候选 workflow/skill
+│   ├── tmp/               # 草稿/中间文件，自动清理
 │   ├── skills/            # 可选；供支持的运行时使用的仓库级 skills
 │   ├── archive/           # 确认后归档的旧 agent 专用配置
 │   └── changelog.md       # .agents/ 的变更审计日志
@@ -211,9 +215,12 @@ your-project/
 | 内容 | 位置 | 权限 |
 |:-----|:-----|:-----|
 | 项目笔记、决策、踩坑记录 | `memory/` | Agent 自由写入、合并、清理 |
+| 结果账本和用户纠正 | `memory/outcomes.md` | Agent 记录重要结果和反馈 |
 | 项目约定和可复用模式 | `rules/` | Agent 自由写入；删除需用户确认 |
 | 复杂流程 | `workflows/` | Agent 自由写入；删除需用户确认 |
 | 生成的审阅报告和可视化 diff | `reports/` | Agent 自由写入；默认不提交 |
+| 实验和候选 skill/workflow | `experiments/` | Agent 自由写入；删除需用户确认 |
+| 草稿/中间文件 | `tmp/` | Agent 自由写入和清理；不提交 |
 | 运行时支持的 skills | `skills/` | 可选的聚焦流程；删除需用户确认 |
 | 来源文档清单 | `.agents/memory/source-index.md` | Agent 索引活跃项目参考资料 |
 | 敏感信息需求 | `.agents/memory/secret-requirements.md` | 只记录名称、来源、范围和负责人；不记录真实值 |
@@ -261,6 +268,8 @@ your-project/
 
 只更新 `AGENTS.md`，保留 `.agents/`。`.agents/` 是项目本地记忆，模板更新时不应删除或替换。
 
+保持已安装的语言版本一致。英文项目从 `AGENTS.md` 更新；简体中文安装从 `AGENTS.zh-CN.md` 更新，但本地仍保存为 `AGENTS.md`。
+
 如果本地 `AGENTS.md` 没有项目级手改：
 
 ```bash
@@ -280,6 +289,8 @@ diff -u AGENTS.md /tmp/AGENTS.latest.md
 curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.0.0/AGENTS.zh-CN.md -o AGENTS.md
 ```
 
+不要让 Agent 按定时任务静默替换 `AGENTS.md`。`.agents/` 维护时可以检查是否有新版 AgentGo 模板并提出更新建议，但替换仍需要你的明确要求或确认。`AGENTS.md` 首行注释携带模板版本，例如 `AGENTS.md v1.3.0`；稳定安装目标应使用 release tag。
+
 更新后重启或要求 Agent 重扫：
 
 > **"按 AGENTS.md 重新扫描这个项目；保留已有 `.agents/`，只报告新增或变化的规则，不要覆盖现有记忆。"**
@@ -289,7 +300,14 @@ curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.0.0/AGENTS.zh-CN.m
 <details>
 <summary><strong>.agents/ 会不会越长越大变成噪音？</strong></summary>
 
-会，所以 `AGENTS.md` 给 Agent 规定了**维护节奏**：进入会话时验证最近笔记是否仍与当前项目产物一致；任一 `memory/` 文件 > 200 行、`changelog.md` 自上次 `[MAINTENANCE]` 起新增 ≥ 30 行、已完成 10 次有意义任务，或发现失效笔记时触发清理。清理会去重、关闭已解决事项、删除失效笔记，并追加 `[MAINTENANCE]` changelog。
+会，所以 `AGENTS.md` 给 Agent 规定了**维护节奏**：进入会话时验证最近笔记是否仍与当前项目产物一致；任一 `memory/` 文件 > 200 行、`changelog.md` 自上次 `[MAINTENANCE]` 起新增 ≥ 30 行、已完成 10 次有意义任务、发现失效笔记、`.agents/` 结构漂移，或 `tmp/` 有失效草稿产物时触发体检。维护会去重、关闭已解决事项、删除失效笔记、记录适应度信号，将重复且验证过的流程提升到 `workflows/` 或受支持的 `skills/`，清理 `tmp/`，并可在维护较复杂时生成 `reports/health-<date>.md`。
+
+</details>
+
+<details>
+<summary><strong>Agent 会主动提出改进建议吗？</strong></summary>
+
+会，但只作为可选后续。若 Agent 有清晰证据表明某个请求范围外的改进可能有价值，应简短说明建议、理由和风险，然后等待用户决定。未经要求，不执行可选建议；低置信想法不应干扰当前交付。
 
 </details>
 
