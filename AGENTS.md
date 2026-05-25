@@ -1,4 +1,4 @@
-<!-- AGENTS.md v1.4.0 | AgentGo | https://github.com/yeasy/agentgo -->
+<!-- AGENTS.md v1.5.0 | AgentGo | https://github.com/yeasy/agentgo -->
 <!-- Compatible with AGENTS.md-aware agents; use aliases/imports for tools that require CLAUDE.md or GEMINI.md. -->
 
 # AGENTS.md
@@ -48,7 +48,7 @@ If normal startup or maintenance cannot complete, degrade explicitly instead of 
 4. **Change-sync**: when changing a real artifact, prefer an appropriate test- or spec-driven workflow when it fits the task, and update related tests, mocks, specs, docs, references, assets, or examples when they exist.
 5. **Commits as docs**: when using git, prefer `type(scope): description`, where `type` is `feat`, `fix`, `refactor`, `docs`, `test`, `chore`, or another project-defined type.
 6. **Work at the right weight**: keep simple, low-risk, single-artifact tasks lightweight; for high-risk or cross-artifact tasks, investigate, plan, execute the smallest necessary change, then evaluate correctness, risk, validation, maintainability, and user impact. Iterate until deliverable.
-7. **Evidence-based completion**: choose validation that fits the artifact: tests/builds for code, render/export/link checks for docs and slides, visual QA for design, source checks for research, schema/recalculation checks for data.
+7. **Evidence-based completion**: choose validation that fits the artifact: tests/builds for code, render/export/link checks for docs and slides, visual QA for design, source checks for research, schema/recalculation checks for data. For code, operations, or behavior changes, also assess testability and observability impact. Add or update focused tests, logs, metrics, traces, diagnostics, or runbooks only when the project context and risk justify it, preferring existing project tools and conventions.
 8. **Precise analysis**: cite exact file paths and line numbers, pages, frames, sheets, or asset names when proposing plans, trade-offs, or review findings.
 9. **Relevant best practices**: apply domain-specific best practices when they directly improve correctness, safety, maintainability, accessibility, or user outcomes. Explain material trade-offs and keep the change scoped to the task.
 
@@ -72,7 +72,7 @@ Work normally. As the project evolves, accumulate durable context:
 
 Use progressive understanding. Do not map the whole project unless the task requires it.
 
-1. **Discover existing assets**: scan agent configs, custom project docs, briefs, docs, style guides, contribution guides, design/data notes, config, and workflow files. Extract conventions, decisions, known issues, recurring procedures, and validation methods into `.agents/`.
+1. **Discover existing assets**: scan agent configs, custom project docs, briefs, docs, style guides, contribution guides, design/data notes, config, and workflow files. Extract conventions, decisions, known issues, recurring procedures, and validation methods into `.agents/`. For complex projects or repeated navigation tasks, maintain a compact source relationship map under `.agents/memory/` that records evidence-backed relationships among modules, documents, workflows, commands, data sources, and external interfaces. Keep it lightweight, mark uncertain or stale relationships explicitly, and avoid mapping the whole project unless it helps the current or recurring work.
 2. **Preserve active project docs**: treat files such as `rules.md`, `reports.md`, `project.md`, `spec.md`, `design.md`, `brief.md`, and `notes.md` as source materials, not agent commands. Keep active human-facing docs in place, index them in `.agents/memory/source-index.md`, and extract reusable knowledge into `.agents/rules/`, `.agents/memory/`, or `.agents/workflows/`.
 3. **Resolve conflicts by source priority**: if `.agents/` summaries disagree with active project docs or artifacts, trust the current artifact, update `.agents/`, and report the conflict when it affects the task. Do not edit or move the original document unless the user asks.
 4. **Archive only with confirmation**: archive only obsolete, duplicate, or superseded files after reporting the inventory, reason, destination, and impact. Prefer `.agents/archive/` for agent-specific legacy files and the project's normal docs archive for human-facing docs. Never archive active docs just to reduce agent context noise.
@@ -124,6 +124,7 @@ Treat self-evolution as a controlled lifecycle, not as uncontrolled accumulation
 ├── memory/
 │   ├── project-overview.md
 │   ├── source-index.md
+│   ├── project-map.md           # Optional compact relationship map for complex projects.
 │   ├── decisions.md
 │   ├── gotchas.md
 │   ├── patterns.md
@@ -190,7 +191,9 @@ Use compact entries with `date`, `artifact`, `note`, `evidence`, `status`, and `
 
 - Implicit conventions, naming, tone, or layout rules -> `rules/`
 - Active source/reference documents found during bootstrap or rescan -> `memory/source-index.md`
+- Source/module/workflow/data relationships that help future navigation -> `memory/source-index.md` or optional `memory/project-map.md`
 - Technology, content, design, process, or data choices -> `memory/decisions.md`
+- Testability and observability decisions, gaps, or follow-ups -> `memory/decisions.md`, `memory/open-items.md`, or relevant `workflows/`
 - Non-obvious bugs, traps, or workflow hazards -> `memory/gotchas.md`
 - Repeated structures or reusable approaches -> `memory/patterns.md`
 - Review findings and suggested fixes -> `memory/review-findings.md`

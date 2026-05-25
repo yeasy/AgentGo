@@ -38,7 +38,7 @@ Models are already capable enough. What actually blocks product quality is **how
 - Claude Code / Codex / Cursor / Copilot / Windsurf / Gemini each have their own config format, and the same rules get rewritten over and over
 - Once you do write down project conventions, the knowledge stays trapped in chat history; the longer the session, the more noise it accumulates
 
-**What AgentGo gives you:** a stable [AGENTS.md protocol](https://raw.githubusercontent.com/yeasy/agentgo/main/AGENTS.md) plus an adaptive `.agents/` project layer. Drop `AGENTS.md` into any project root; the agent creates `.agents/` when project work needs adaptation or durable memory, records durable project knowledge after meaningful work, and never needs to edit `AGENTS.md` for that project.
+**What AgentGo gives you:** a stable [AGENTS.md protocol](https://raw.githubusercontent.com/yeasy/agentgo/main/AGENTS.md) plus an adaptive `.agents/` project layer. Drop `AGENTS.md` into any project root; the agent creates `.agents/` when project work needs adaptation or durable memory, records durable project knowledge after meaningful work, and never needs to edit `AGENTS.md` for that project. Project memory stays lightweight: source indexes, optional relationship maps, workflows, decisions, changelogs, and outcomes live under `.agents/`; full knowledge graphs or automatic instrumentation are not required.
 
 |                          | Without AgentGo                                | With AgentGo                                          |
 |:-------------------------|:-----------------------------------------------|:------------------------------------------------------|
@@ -73,7 +73,7 @@ After downloading `AGENTS.md` and restarting your agent, simple read-only questi
 For that bootstrap, the agent will:
 1. Scan your project structure and write the project profile, commands, and conventions into `.agents/`
 2. Run a read-only project review: risks, missing validation, artifact/config drift, and suggested fixes
-3. Detect existing agent configs and custom project docs (`rules.md`, `reports.md`, `project.md`, `spec.md`, `design.md`, `brief.md`, `notes.md`, `docs/`), index active sources in `.agents/memory/source-index.md`, and list any archive plan **for your confirmation**
+3. Detect existing agent configs and custom project docs (`rules.md`, `reports.md`, `project.md`, `spec.md`, `design.md`, `brief.md`, `notes.md`, `docs/`), index active sources in `.agents/memory/source-index.md`, optionally maintain a compact relationship map when complex projects need it, and list any archive plan **for your confirmation**
 4. Keep `AGENTS.md` unchanged; project adaptation lives in `.agents/`
 
 The first review is intentionally quick: it covers top-level structure, primary artifacts, config, docs/briefs/style guides, and validation workflows. Ask for a deep review when you want module-by-module or page-by-page analysis.
@@ -133,7 +133,7 @@ flowchart LR
     style D fill:#B45309,color:#fff
 ```
 
-New findings are filed by type: source document inventory → `memory/source-index.md`, project conventions → `rules/`, decisions → `memory/decisions.md`, gotchas → `memory/gotchas.md`, reusable patterns → `memory/patterns.md`, outcomes and user corrections → `memory/outcomes.md`, reusable workflows → `workflows/`, generated review reports → `reports/`, candidate workflows/skills → `experiments/`, current-task scratch output → `tmp/`, runtime-supported skills → `skills/` when useful, review findings → `memory/review-findings.md`, secret requirements without values → `memory/secret-requirements.md`, and unresolved work → `memory/open-items.md`. After each meaningful task, the agent records durable results and appends `.agents/changelog.md`. The maintenance cadence is enforced by `AGENTS.md` itself — **easy to write in, hard to stay** — so notes never pile up into noise.
+New findings are filed by type: source document inventory and useful relationships → `memory/source-index.md` or optional `memory/project-map.md`, project conventions → `rules/`, decisions → `memory/decisions.md`, testability or observability gaps → `memory/open-items.md` or relevant `workflows/`, gotchas → `memory/gotchas.md`, reusable patterns → `memory/patterns.md`, outcomes and user corrections → `memory/outcomes.md`, reusable workflows → `workflows/`, generated review reports → `reports/`, candidate workflows/skills → `experiments/`, current-task scratch output → `tmp/`, runtime-supported skills → `skills/` when useful, review findings → `memory/review-findings.md`, secret requirements without values → `memory/secret-requirements.md`, and unresolved work → `memory/open-items.md`. After each meaningful task, the agent records durable results and appends `.agents/changelog.md`. The maintenance cadence is enforced by `AGENTS.md` itself — **easy to write in, hard to stay** — so notes never pile up into noise.
 
 Evolution is lifecycle-based: memory can be active, stale, deprecated, closed, or pinned; workflows and skills move from candidate to active to deprecated to archived. Health checks look for fitness signals such as fewer repeated mistakes, fewer user corrections, less stale context, higher validated reuse, and less repeated setup effort.
 
@@ -143,7 +143,7 @@ Recommended memory entry shape: `date`, `artifact`, `note`, `evidence`, `status`
 
 | Project type | Typical validation |
 |:--|:--|
-| Code | test, build, lint, type check |
+| Code | test, build, lint, type check, focused diagnostics when behavior changes |
 | Docs / slides | render/export, link check, style/consistency pass |
 | Design | visual QA, export check, asset inspection |
 | Data | schema check, recalculation, sample validation |
@@ -169,7 +169,7 @@ After a few sessions, your project ends up like this:
 your-project/
 ├── AGENTS.md              ← The only file you add (human-controlled)
 ├── .agents/               ← Auto-created when project work needs memory
-│   ├── memory/            # Project overview, decisions, findings, open items
+│   ├── memory/            # Project overview, source index/map, decisions, findings
 │   ├── rules/             # Project conventions extracted from artifacts/config
 │   ├── workflows/         # Standard operating procedures for recurring flows
 │   ├── reports/           # Generated review reports, not committed by default
@@ -223,6 +223,7 @@ A clear boundary between human control and agent autonomy:
 | Scratch/intermediate files | `tmp/` | Agent writes and prunes freely; not committed |
 | Runtime-supported skills | `skills/` | Optional focused workflows; deletion needs user confirmation |
 | Source document inventory | `.agents/memory/source-index.md` | Agent indexes active project references |
+| Optional relationship map | `.agents/memory/project-map.md` | Agent records evidence-backed relationships only when useful |
 | Secret requirements | `.agents/memory/secret-requirements.md` | Names, sources, scopes, and owners only; no secret values |
 | Obsolete agent-only configs | `.agents/archive/` | **Archived only after user confirmation** |
 | Obsolete human-facing docs | Project docs archive, e.g. `docs/archive/` | **Archived only after user confirmation** |
