@@ -1,4 +1,4 @@
-<!-- AGENTS.md v1.4.0 | AgentGo | https://github.com/yeasy/agentgo -->
+<!-- AGENTS.md v1.5.0 | AgentGo | https://github.com/yeasy/agentgo -->
 <!-- Compatible with AGENTS.md-aware agents; use aliases/imports for tools that require CLAUDE.md or GEMINI.md. -->
 
 # AGENTS.md
@@ -48,7 +48,7 @@
 4. **变更同步**：修改真实产物时，在适合任务时优先采用 test/spec 驱动流程，并同步更新已有测试、mock、spec、文档、引用、素材或示例。
 5. **提交即文档**：使用 git 时，优先采用 `type(scope): description`，其中 `type` 为 `feat`、`fix`、`refactor`、`docs`、`test`、`chore` 或项目自定义类型。
 6. **按合适重量工作**：简单、低风险、单一产物任务保持轻量；高风险或跨产物任务先调研，再计划，执行最小必要变更，最后从正确性、风险、验证、可维护性、用户影响复核。发现问题就继续迭代。
-7. **基于证据完成**：按产物类型选择验证方式：代码跑测试/构建，文档和幻灯片做渲染/导出/链接检查，设计做视觉 QA，研究做来源核验，数据做 schema/重算检查。
+7. **基于证据完成**：按产物类型选择验证方式：代码跑测试/构建，文档和幻灯片做渲染/导出/链接检查，设计做视觉 QA，研究做来源核验，数据做 schema/重算检查。对代码、运维或行为变更，还要评估可测性和可观测性影响。只有当项目上下文和风险需要时，才补充聚焦的测试、日志、指标、追踪、诊断信息或 runbook，并优先沿用项目已有工具和约定。
 8. **精确分析**：提出计划、权衡或评审结论时，引用精确文件路径和行号、页码、画板、工作表或素材名。
 9. **相关最佳实践**：当领域最佳实践能直接提升正确性、安全性、可维护性、可访问性或用户结果时采用；说明重要取舍，并保持变更范围受控。
 
@@ -72,7 +72,7 @@
 
 采用渐进式理解。除非任务需要，不一次性梳理全项目。
 
-1. **探索已有资产**：扫描 agent 配置、自定义项目说明、brief、docs、风格指南、贡献指南、设计/数据说明、配置和工作流文件。提取约定、决策、已知问题、重复流程和验证方式到 `.agents/`。
+1. **探索已有资产**：扫描 agent 配置、自定义项目说明、brief、docs、风格指南、贡献指南、设计/数据说明、配置和工作流文件。提取约定、决策、已知问题、重复流程和验证方式到 `.agents/`。对复杂项目或反复需要导航的任务，可在 `.agents/memory/` 下维护紧凑的来源关系图，记录模块、文档、工作流、命令、数据源和外部接口之间有证据支撑的关系。保持轻量，对不确定或失效关系显式标记；除非有助于当前或重复工作，不要全量梳理项目。
 2. **保留活跃项目文档**：`rules.md`、`reports.md`、`project.md`、`spec.md`、`design.md`、`brief.md`、`notes.md` 等文件是来源资料，不是 Agent 指令。活跃的面向人文档保留原位，在 `.agents/memory/source-index.md` 建索引，并把可复用知识提取到 `.agents/rules/`、`.agents/memory/` 或 `.agents/workflows/`。
 3. **按来源优先级解决冲突**：如果 `.agents/` 摘要与当前项目文档或产物冲突，以当前产物为准，更新 `.agents/`；冲突影响任务时向用户报告。除非用户要求，不编辑或移动原文档。
 4. **归档必须确认**：只归档过时、重复或已被替代的文件，并先报告清单、原因、目标位置和影响。旧 agent 专用文件优先放 `.agents/archive/`，面向人的文档优先放项目常规文档归档区。不要为了减少 Agent 上下文噪音而归档活跃文档。
@@ -124,6 +124,7 @@
 ├── memory/
 │   ├── project-overview.md
 │   ├── source-index.md
+│   ├── project-map.md           # 可选；复杂项目的紧凑关系图。
 │   ├── decisions.md
 │   ├── gotchas.md
 │   ├── patterns.md
@@ -190,7 +191,9 @@
 
 - 隐性约定、命名、语气或版式规则 -> `rules/`
 - 初始化或重扫发现的活跃来源/参考文档 -> `memory/source-index.md`
+- 有助于未来导航的来源/模块/工作流/数据关系 -> `memory/source-index.md` 或可选的 `memory/project-map.md`
 - 技术、内容、设计、流程或数据选择 -> `memory/decisions.md`
+- 可测性和可观测性相关决策、缺口或后续事项 -> `memory/decisions.md`、`memory/open-items.md` 或相关 `workflows/`
 - 非显而易见的 bug、陷阱或流程风险 -> `memory/gotchas.md`
 - 重复结构或可复用方法 -> `memory/patterns.md`
 - 审阅发现和修改建议 -> `memory/review-findings.md`

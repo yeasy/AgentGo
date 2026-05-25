@@ -38,7 +38,7 @@
 - Claude Code / Codex / Cursor / Copilot / Windsurf / Gemini 各有一套配置格式，规则反复抄
 - 写完一遍项目约定，知识又跟着聊天记录走，记忆越长越多噪音
 
-**AgentGo 给你的：** 一份稳定的 [AGENTS.md 协议](https://raw.githubusercontent.com/yeasy/agentgo/main/AGENTS.zh-CN.md) 加一个自适应 `.agents/` 项目层。把 `AGENTS.md` 放进任何项目根目录；当项目工作需要适配或持久记忆时，Agent 自动创建 `.agents/`，每次有意义工作后记录持久项目知识，且无需为该项目修改 `AGENTS.md` 本体。
+**AgentGo 给你的：** 一份稳定的 [AGENTS.md 协议](https://raw.githubusercontent.com/yeasy/agentgo/main/AGENTS.zh-CN.md) 加一个自适应 `.agents/` 项目层。把 `AGENTS.md` 放进任何项目根目录；当项目工作需要适配或持久记忆时，Agent 自动创建 `.agents/`，每次有意义工作后记录持久项目知识，且无需为该项目修改 `AGENTS.md` 本体。项目记忆保持轻量：来源索引、可选关系图、工作流、决策、changelog 和 outcomes 都放在 `.agents/` 下；不要求完整知识图谱或自动埋点。
 
 |           | 没有 AgentGo                     | 有 AgentGo                      |
 |:----------|:--------------------------------|:--------------------------------|
@@ -73,7 +73,7 @@ curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/main/AGENTS.zh-CN.md 
 执行该 bootstrap 时，Agent 会：
 1. 扫描你的项目结构，把项目概况、命令和约定写入 `.agents/`
 2. 执行一次只读项目审阅：风险、缺失验证、产物/配置漂移、修改建议
-3. 探测已有 agent 配置和自定义项目说明（`rules.md`、`reports.md`、`project.md`、`spec.md`、`design.md`、`brief.md`、`notes.md`、`docs/`），把活跃来源索引到 `.agents/memory/source-index.md`，并列出任何归档计划 **等你确认**
+3. 探测已有 agent 配置和自定义项目说明（`rules.md`、`reports.md`、`project.md`、`spec.md`、`design.md`、`brief.md`、`notes.md`、`docs/`），把活跃来源索引到 `.agents/memory/source-index.md`，在复杂项目需要时可维护紧凑关系图，并列出任何归档计划 **等你确认**
 4. 保持 `AGENTS.md` 不变；项目适配信息写入 `.agents/`
 
 第一次审阅是快速初审：只覆盖顶层结构、主要产物、配置、docs/brief/风格指南和验证工作流。需要逐模块、逐页或逐素材深度审阅时，再明确提出。
@@ -133,7 +133,7 @@ flowchart LR
     style D fill:#B45309,color:#fff
 ```
 
-新发现按类型归档：来源文档清单 → `memory/source-index.md`、项目约定 → `rules/`、决策 → `memory/decisions.md`、踩坑 → `memory/gotchas.md`、可复用模式 → `memory/patterns.md`、结果和用户纠正 → `memory/outcomes.md`、可复用流程 → `workflows/`、生成的审阅报告 → `reports/`、候选 workflow/skill → `experiments/`、当前任务草稿输出 → `tmp/`、运行时支持的 skills → `skills/`（确有帮助时）、审阅发现 → `memory/review-findings.md`、不含真实值的敏感信息需求 → `memory/secret-requirements.md`、未决事项 → `memory/open-items.md`。每次有意义任务后，Agent 记录持久结果并追加 `.agents/changelog.md`。维护节奏由 `AGENTS.md` 强制——**写入容易，留下来要难**，避免笔记越攒越多变成噪音。
+新发现按类型归档：来源文档清单和有用关系 → `memory/source-index.md` 或可选的 `memory/project-map.md`、项目约定 → `rules/`、决策 → `memory/decisions.md`、可测性或可观测性缺口 → `memory/open-items.md` 或相关 `workflows/`、踩坑 → `memory/gotchas.md`、可复用模式 → `memory/patterns.md`、结果和用户纠正 → `memory/outcomes.md`、可复用流程 → `workflows/`、生成的审阅报告 → `reports/`、候选 workflow/skill → `experiments/`、当前任务草稿输出 → `tmp/`、运行时支持的 skills → `skills/`（确有帮助时）、审阅发现 → `memory/review-findings.md`、不含真实值的敏感信息需求 → `memory/secret-requirements.md`、未决事项 → `memory/open-items.md`。每次有意义任务后，Agent 记录持久结果并追加 `.agents/changelog.md`。维护节奏由 `AGENTS.md` 强制——**写入容易，留下来要难**，避免笔记越攒越多变成噪音。
 
 进化按生命周期管理：记忆可以是 active、stale、deprecated、closed 或 pinned；workflow 和 skill 从 candidate 进入 active，再到 deprecated 或 archived。体检会关注适应度信号：重复错误是否减少、用户纠正是否减少、失效上下文是否减少、已验证复用是否增加、重复配置成本是否降低。
 
@@ -143,7 +143,7 @@ flowchart LR
 
 | 项目类型 | 常见验证方式 |
 |:--|:--|
-| 代码 | test、build、lint、类型检查 |
+| 代码 | test、build、lint、类型检查、行为变更时的聚焦诊断 |
 | 文档 / 幻灯片 | 渲染/导出、链接检查、风格/一致性检查 |
 | 设计 | 视觉 QA、导出检查、素材检查 |
 | 数据 | schema 检查、重算、样本验证 |
@@ -169,7 +169,7 @@ flowchart LR
 your-project/
 ├── AGENTS.md              ← 你唯一需要添加的文件（人类控制）
 ├── .agents/                ← 项目工作需要记忆时自动创建
-│   ├── memory/            # 项目概览、决策记录、审阅发现、未决事项
+│   ├── memory/            # 项目概览、来源索引/关系图、决策和发现
 │   ├── rules/             # 从产物/配置中提取的项目约定
 │   ├── workflows/         # 重复流程的标准操作手册
 │   ├── reports/           # 生成的审阅报告，默认不提交
@@ -223,6 +223,7 @@ your-project/
 | 草稿/中间文件 | `tmp/` | Agent 自由写入和清理；不提交 |
 | 运行时支持的 skills | `skills/` | 可选的聚焦流程；删除需用户确认 |
 | 来源文档清单 | `.agents/memory/source-index.md` | Agent 索引活跃项目参考资料 |
+| 可选关系图 | `.agents/memory/project-map.md` | 仅在有用时记录有证据支撑的关系 |
 | 敏感信息需求 | `.agents/memory/secret-requirements.md` | 只记录名称、来源、范围和负责人；不记录真实值 |
 | 过时的 agent 专用配置 | `.agents/archive/` | **用户确认后**才归档 |
 | 过时的面向人文档 | 项目文档归档区，如 `docs/archive/` | **用户确认后**才归档 |
