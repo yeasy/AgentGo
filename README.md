@@ -44,7 +44,7 @@ Models are already capable enough. What actually blocks product quality is **how
 |:-------------------------|:-----------------------------------------------|:------------------------------------------------------|
 | **Cross-tool reuse**     | One ruleset per tool, rewrite when you switch workspace | One `AGENTS.md` travels with the project, works everywhere |
 | **Best practices**       | Scattered, re-researched per project           | Out of the box: conventions, flow, safety, upkeep cadence |
-| **Self-improvement**     | Needs constant human reminders                 | Auto-learns and evolves — gets smarter over time      |
+| **Self-improvement**     | Needs constant human reminders                 | Evolves through evidence-gated, reversible learning   |
 | **Project knowledge**    | Stuck in chat history, dies when the session ends | Persisted in `.agents/`, agent maintains and prunes itself |
 | **Existing-doc adoption**| Agent configs and project docs scattered everywhere | Detect → index → extract; archive only obsolete files after you confirm |
 
@@ -120,13 +120,13 @@ flowchart LR
 
 `.agents/` is continuously maintained by the agent — **only useful entries stay; stale ones get pruned**:
 
-Text alternative: enter with current `.agents/` context, execute the task, record reusable findings and material outcomes in the right `.agents/` location, periodically run a health check that merges stale memory, promotes repeated workflows/skills, checks structure, and prunes scratch files, then repeat on the next session.
+Text alternative: enter with current `.agents/` context, execute the task, record reusable findings and material outcomes in the right `.agents/` location, periodically run a health check that validates candidate updates, merges stale memory, promotes repeated workflows/skills, checks structure, and prunes scratch files, then repeat on the next session.
 
 ```mermaid
 flowchart LR
     A["Read .agents/\nEnter with project context"] --> B["Execute task"]
     B --> C["New findings\n→ write to right category"]
-    C --> D["Periodic health check\nmerge / promote / prune"]
+    C --> D["Periodic health check\nvalidate / merge / promote / prune"]
     D --> A
 
     style A fill:#1565C0,color:#fff
@@ -136,6 +136,8 @@ flowchart LR
 New findings are filed by type: source document inventory and useful relationships → `memory/source-index.md` or optional `memory/project-map.md`, project conventions → `rules/`, decisions → `memory/decisions.md`, testability or observability gaps → `memory/open-items.md` or relevant `workflows/`, gotchas → `memory/gotchas.md`, reusable patterns → `memory/patterns.md`, outcomes and user corrections → `memory/outcomes.md`, reusable workflows → `workflows/`, generated review reports → `reports/`, candidate workflows/skills → `experiments/`, current-task scratch output → `tmp/`, runtime-supported skills → `skills/` when useful, review findings → `memory/review-findings.md`, secret requirements without values → `memory/secret-requirements.md`, and unresolved work → `memory/open-items.md`. After each meaningful task, the agent records durable results and appends `.agents/changelog.md`. The maintenance cadence is enforced by `AGENTS.md` itself — **easy to write in, hard to stay** — so notes never pile up into noise.
 
 Evolution is lifecycle-based: memory can be active, stale, deprecated, closed, or pinned; workflows and skills move from candidate to active to deprecated to archived. Health checks look for fitness signals such as fewer repeated mistakes, fewer user corrections, less stale context, higher validated reuse, and less repeated setup effort.
+
+Candidate rules, workflows, and skills evolve through small add/delete/replace edits backed by real task evidence. Accepted updates need an appropriate validation signal, while rejected candidates stay as negative feedback in `experiments/` or `memory/outcomes.md` when they would prevent repeated mistakes. Reusing a workflow or skill in a different model, tool harness, repository type, or task family requires a focused check before treating it as active guidance.
 
 Recommended memory entry shape: `date`, `artifact`, `note`, `evidence`, `status`, and `next action`. The project does not need git; when no git repository exists, `.agents/changelog.md` still acts as the local audit trail.
 

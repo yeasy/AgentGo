@@ -44,7 +44,7 @@
 |:----------|:--------------------------------|:--------------------------------|
 | **跨工具复用** | 每个工具一份 rules，换工作区还要重写         | 一份 `AGENTS.md` 跟着项目走，全工具通用      |
 | **最佳实践**  | 散落各处，每个项目重新研究                   | 开箱即用：约定、流程、安全、维护节奏              |
-| **自我进化**  | 需要人工不断提醒和告诉                     | 自动学习、进化，越来越聪明                |
+| **自我进化**  | 需要人工不断提醒和告诉                     | 通过证据门控、可回退的学习持续演进                |
 | **项目知识**  | 留在聊天记录里，会话一关就失效                 | 沉淀到 `.agents/`，Agent 自维护、定期清理    |
 | **已有文档吸收** | agent 配置和项目说明散落各处 | 扫描发现 → 建索引 → 提取知识；仅确认后归档废弃文件 |
 
@@ -120,13 +120,13 @@ flowchart LR
 
 `.agents/` 由 Agent 持续维护，**只留有用的，定期清理失效的**：
 
-文字替代：带着当前 `.agents/` 上下文进入，执行任务，把可复用发现和重要结果写入正确的 `.agents/` 位置，定期执行体检：合并失效记忆、提升重复 workflow/skill、检查结构、清理草稿文件，然后在下一次会话重复。
+文字替代：带着当前 `.agents/` 上下文进入，执行任务，把可复用发现和重要结果写入正确的 `.agents/` 位置，定期执行体检：验证候选更新、合并失效记忆、提升重复 workflow/skill、检查结构、清理草稿文件，然后在下一次会话重复。
 
 ```mermaid
 flowchart LR
     A["读 .agents/\n带项目上下文进入"] --> B["执行任务"]
     B --> C["新发现\n→ 写入对应分类"]
-    C --> D["定期体检\n合并/提升/清理"]
+    C --> D["定期体检\n验证/合并/提升/清理"]
     D --> A
 
     style A fill:#1565C0,color:#fff
@@ -136,6 +136,8 @@ flowchart LR
 新发现按类型归档：来源文档清单和有用关系 → `memory/source-index.md` 或可选的 `memory/project-map.md`、项目约定 → `rules/`、决策 → `memory/decisions.md`、可测性或可观测性缺口 → `memory/open-items.md` 或相关 `workflows/`、踩坑 → `memory/gotchas.md`、可复用模式 → `memory/patterns.md`、结果和用户纠正 → `memory/outcomes.md`、可复用流程 → `workflows/`、生成的审阅报告 → `reports/`、候选 workflow/skill → `experiments/`、当前任务草稿输出 → `tmp/`、运行时支持的 skills → `skills/`（确有帮助时）、审阅发现 → `memory/review-findings.md`、不含真实值的敏感信息需求 → `memory/secret-requirements.md`、未决事项 → `memory/open-items.md`。每次有意义任务后，Agent 记录持久结果并追加 `.agents/changelog.md`。维护节奏由 `AGENTS.md` 强制——**写入容易，留下来要难**，避免笔记越攒越多变成噪音。
 
 进化按生命周期管理：记忆可以是 active、stale、deprecated、closed 或 pinned；workflow 和 skill 从 candidate 进入 active，再到 deprecated 或 archived。体检会关注适应度信号：重复错误是否减少、用户纠正是否减少、失效上下文是否减少、已验证复用是否增加、重复配置成本是否降低。
+
+候选 rules、workflows 和 skills 通过小范围 add/delete/replace 编辑演进，并由真实任务证据支撑。被接受的更新需要合适验证信号；被拒候选若能避免重复错误，则作为负反馈保留在 `experiments/` 或 `memory/outcomes.md`。当 workflow 或 skill 迁移到不同模型、工具 harness、仓库类型或任务族时，先做聚焦检查，再把它视为 active 指导。
 
 推荐记忆条目字段：`date`、`artifact`、`note`、`evidence`、`status`、`next action`。项目不需要必须使用 git；没有 git 仓库时，`.agents/changelog.md` 仍作为本地审计记录。
 
