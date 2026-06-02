@@ -345,7 +345,7 @@ Use the fallback from the Compatibility table. For example, Claude Code can use 
 <details>
 <summary><strong>Which parts of AGENTS.md can I edit?</strong></summary>
 
-All of it, when you are intentionally changing the protocol. Agents should not edit `AGENTS.md` just to adapt it to a project; that information belongs in `.agents/`. We recommend keeping the overall structure of "Startup Instructions", "Self-Evolution Protocol", and "Hard Constraints".
+All of it, when you are intentionally changing the protocol. Agents should not edit `AGENTS.md` just to adapt it to a project; that information belongs in `.agents/`. We recommend keeping the overall structure of "Startup Instructions", "Trust & Safety", "Self-Evolution Protocol", and "Hard Constraints".
 
 </details>
 
@@ -373,7 +373,7 @@ No. `AGENTS.md` mandates that **the only instruction sources are AGENTS.md itsel
 3. **Project workflow commands** (test / render / export / validate / git pull) → executable after checking the real workflow definition; destructive flags auto-escalate to tier 1
 4. **Generic engineering conventions** (commit format, naming style) → reference knowledge
 
-See "Startup Instructions" item 7 in `AGENTS.md`.
+See the **Trust & Safety** section in `AGENTS.md`.
 
 </details>
 

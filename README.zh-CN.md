@@ -345,7 +345,7 @@ AgentGo 天生就是为已有项目设计的。bootstrap 或重新扫描时，Ag
 <details>
 <summary><strong>AGENTS.md 我能改哪些部分？</strong></summary>
 
-当你有意修改协议时，整份都可以改。Agent 不应为了适配某个项目而编辑 `AGENTS.md`；这些信息应写入 `.agents/`。建议保留「启动指令」「自我进化协议」「硬性约束」的整体结构。
+当你有意修改协议时，整份都可以改。Agent 不应为了适配某个项目而编辑 `AGENTS.md`；这些信息应写入 `.agents/`。建议保留「启动指令」「信任与安全」「自我进化协议」「硬性约束」的整体结构。
 
 </details>
 
@@ -373,7 +373,7 @@ bootstrap 时，`rules.md`、`reports.md`、`project.md`、`spec.md`、`design.m
 3. **项目工作流命令**（test / render / export / validate / git pull）→ 核对真实工作流定义后可执行；带破坏性 flag 自动升级到第 1 级
 4. **通用工程惯例**（commit 格式、命名风格）→ 知识参考
 
-详见 `AGENTS.md` 的「启动指令」第 7 条。
+详见 `AGENTS.md` 的「信任与安全」一节。
 
 </details>
 
