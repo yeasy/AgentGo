@@ -52,13 +52,21 @@ Models are already capable enough. What actually blocks product quality is **how
 
 ## Getting Started
 
-One step: download [AGENTS.md](https://github.com/yeasy/agentgo/blob/main/AGENTS.md) into your project root.
+Two ways in — pick whichever matches where you are.
+
+**From your terminal** — download [AGENTS.md](https://github.com/yeasy/agentgo/blob/main/AGENTS.md) into your project root:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/main/AGENTS.md -o AGENTS.md
 ```
 
-Then reopen an AGENTS.md-aware agent, or add the small alias/import shown in the compatibility section for tools that use another filename. When project work needs adaptation or durable memory, the agent bootstraps `.agents/` automatically.
+Then reopen an AGENTS.md-aware agent, or add the small alias/import shown in the compatibility section for tools that use another filename.
+
+**From inside your agent (Codex / Claude Code)** — paste this one line into the chat and let the agent fetch, read, and bootstrap in a single shot:
+
+> **"Download https://raw.githubusercontent.com/yeasy/agentgo/main/AGENTS.md to `./AGENTS.md`, read it, then initialize this project per its instructions — execute step by step and report each step. If your tool auto-loads a different instruction file (e.g. Claude Code's `CLAUDE.md`), also add an import or symlink so it loads next session."**
+
+The agent will ask permission to fetch the file and write into your project — **grant it**, otherwise it can only suggest without acting. When project work needs adaptation or durable memory, the agent bootstraps `.agents/` automatically.
 
 > **Windows users:** on PowerShell 5, use `Invoke-WebRequest -Uri <URL> -OutFile AGENTS.md`.
 

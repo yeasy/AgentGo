@@ -52,13 +52,21 @@
 
 ## 快速开始
 
-只需一步，把 [AGENTS.zh-CN.md](https://github.com/yeasy/agentgo/blob/main/AGENTS.zh-CN.md) 下载到项目根目录并保存为 `AGENTS.md`（AGENTS 规范要求文件名固定）：
+两种方式，按你当前所在位置任选其一。
+
+**在终端里** —— 把 [AGENTS.zh-CN.md](https://github.com/yeasy/agentgo/blob/main/AGENTS.zh-CN.md) 下载到项目根目录并保存为 `AGENTS.md`（AGENTS 规范要求文件名固定）：
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/main/AGENTS.zh-CN.md -o AGENTS.md
 ```
 
-然后重新打开支持 AGENTS.md 的 Agent；对使用其他文件名的工具，按下方兼容性说明加一个很小的别名或 import。当项目工作需要适配或持久记忆时，Agent 会自动 bootstrap `.agents/`。
+然后重新打开支持 AGENTS.md 的 Agent；对使用其他文件名的工具，按下方兼容性说明加一个很小的别名或 import。
+
+**在 Agent 里（Codex / Claude Code）** —— 把这一行贴进对话框，让 Agent 一次性完成拉取、阅读、bootstrap：
+
+> **"下载 https://raw.githubusercontent.com/yeasy/agentgo/main/AGENTS.zh-CN.md 保存为根目录 `./AGENTS.md`，阅读它，然后按其中说明逐步初始化本项目并汇报每一步。若你的工具自动加载的指令文件名不同（如 Claude Code 的 `CLAUDE.md`），再加一个 import 或软链接，便于下次自动加载。"**
+
+Agent 会向你申请“拉取文件 / 写入项目”的权限——**请允许**，否则它只能给建议而无法落地。当项目工作需要适配或持久记忆时，Agent 会自动 bootstrap `.agents/`。
 
 > **Windows 用户：** PowerShell 5 下请用 `Invoke-WebRequest -Uri <URL> -OutFile AGENTS.md`。
 
