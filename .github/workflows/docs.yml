@@ -10,7 +10,7 @@ jobs:
     name: EN/zh sync
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: AGENTS.md / AGENTS.zh-CN.md parity
         run: |
           en=$(wc -l < AGENTS.md); zh=$(wc -l < AGENTS.zh-CN.md)
@@ -34,7 +34,7 @@ jobs:
     name: link check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: lycheeverse/lychee-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
