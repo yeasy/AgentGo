@@ -41,9 +41,10 @@ jobs:
         with:
           # Version-pinned raw URLs are excluded so docs can reference a tag
           # in the same change that introduces it; shields/star-history are
-          # dynamic badge services that rate-limit checkers.
+          # dynamic badge services that rate-limit checkers; addyosmani.com
+          # drops connections from CI runner IPs (verified alive manually).
           args: >-
             --no-progress
-            --exclude 'img\.shields\.io|star-history\.com|raw\.githubusercontent\.com/yeasy/agentgo/v[0-9]|github\.com/yeasy/AgentGo/security'
+            --exclude 'img\.shields\.io|star-history\.com|raw\.githubusercontent\.com/yeasy/agentgo/v[0-9]|github\.com/yeasy/AgentGo/security|addyosmani\.com'
             README.md README.zh-CN.md AGENTS.md AGENTS.zh-CN.md CONTRIBUTING.md SECURITY.md
           fail: true
