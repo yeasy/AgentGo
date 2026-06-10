@@ -1,0 +1,49 @@
+name: docs
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  sync:
+    name: EN/zh sync
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: AGENTS.md / AGENTS.zh-CN.md parity
+        run: |
+          en=$(wc -l < AGENTS.md); zh=$(wc -l < AGENTS.zh-CN.md)
+          if [ "$en" -ne "$zh" ]; then
+            echo "Line count drift: AGENTS.md=$en AGENTS.zh-CN.md=$zh"; exit 1
+          fi
+          v_en=$(head -1 AGENTS.md | grep -o 'v[0-9][0-9.]*')
+          v_zh=$(head -1 AGENTS.zh-CN.md | grep -o 'v[0-9][0-9.]*')
+          if [ "$v_en" != "$v_zh" ]; then
+            echo "Version marker drift: AGENTS.md=$v_en AGENTS.zh-CN.md=$v_zh"; exit 1
+          fi
+          echo "AGENTS pair OK: $en lines, $v_en"
+      - name: README heading parity
+        run: |
+          if ! diff <(grep -n '^#' README.md | cut -d: -f1) <(grep -n '^#' README.zh-CN.md | cut -d: -f1); then
+            echo "README heading structure drift between languages"; exit 1
+          fi
+          echo "README headings aligned"
+
+  links:
+    name: link check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: lycheeverse/lychee-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          # Version-pinned raw URLs are excluded so docs can reference a tag
+          # in the same change that introduces it; shields/star-history are
+          # dynamic badge services that rate-limit checkers.
+          args: >-
+            --no-progress
+            --exclude 'img\.shields\.io|star-history\.com|raw\.githubusercontent\.com/yeasy/agentgo/v[0-9]|github\.com/yeasy/AgentGo/security'
+            README.md README.zh-CN.md AGENTS.md AGENTS.zh-CN.md CONTRIBUTING.md SECURITY.md
+          fail: true
