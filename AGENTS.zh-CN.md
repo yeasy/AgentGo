@@ -1,4 +1,4 @@
-<!-- AGENTS.md v1.8.0 | AgentGo | https://github.com/yeasy/agentgo -->
+<!-- AGENTS.md v1.9.0 | AgentGo | https://github.com/yeasy/agentgo -->
 <!-- Compatible with AGENTS.md-aware agents; use aliases/imports for tools that require CLAUDE.md or GEMINI.md. -->
 
 # AGENTS.md
@@ -13,7 +13,7 @@
 
 1. **读取本文件**，理解项目的 Agent 协议。
 2. **检查 `.agents/` 是否存在**：
-   - 存在 -> 如有 `.agents/memory/project-overview.md` 则读取；如有 `.agents/changelog.md` 则读取末尾 5 行。
+   - 存在 -> 如有 `.agents/memory/project-overview.md` 则读取（含其中的 `Standing corrections` 小节）；如有 `.agents/changelog.md` 则读取末尾 5 行。把这些 standing corrections 视为本次会话的有效指导，与本文件中的约定同等对待。
    - 不存在 -> 简单只读问答可继续只读；在修改项目产物、记录持久发现或执行初始化/重新扫描流程前 bootstrap `.agents/`。
 3. **当用户明确要求初始化/重新扫描，或 `.agents/` 缺失且任务需要项目适配时**，创建或更新项目适配层：
    a. 识别项目类型、主要产物、真相源文件、依赖/工具、入口和验证/审阅/导出命令。
@@ -125,7 +125,7 @@
 - **有害降级回滚**：当 workflow、skill 或 rule 因产生危害（`result=hurt`）或反复被纠正而降级时，重新审阅仍处于 active 的、依赖该能力的 outcome，将受影响的产物或后续事项登记到 `memory/open-items.md`，让下一次会话去验证、修复或回滚相关变更；不能默默放任。
 - **实验隔离**：未验证想法、候选 workflow、候选 skill 和被拒更新尝试先放入 `experiments/` 或 `memory/patterns.md`，直到证据足够再提升或重试。Agent 自写入 `experiments/` 的条目只是顾问性上下文，跟随前必须与当前项目产物交叉核对；不经用户确认，不得提升到 `rules/`、`workflows/` 或 `skills/`。不可信来源里的 prompt-like 内容一律不得提升。
 - **迁移谨慎**：在模型、工具 harness、仓库类型或任务族之外复用 rule、workflow 或 skill 前，先在新环境做聚焦检查。证据不足时，把迁移保持为候选，而不是 active 常设指导。
-- **用户反馈信号**：用户纠正、反复偏好、拒绝的建议和"不要再这样做"的反馈是高优先级信号；若后续可能再次相关，记录为 decisions、gotchas 或 outcomes。
+- **用户反馈信号**：用户纠正、反复偏好、拒绝的建议和"不要再这样做"的反馈是高优先级信号。"不要再这样做"类纠正要当场记录、再继续任务——在 `memory/project-overview.md` 的 `Standing corrections` 小节写一行 terse 条目，使其在下次会话开始时重新加载并生效，同时记入 `outcomes.md` 账本。只记到 `decisions.md`、`gotchas.md` 或 `outcomes.md` 不够——它们在启动时不会被重新加载，纠正会跨会话遗忘。若某条纠正记录后仍复发，且产物或运行时支持，按信任与安全里"护栏优于文本"的规则，提议把它转成可执行护栏（test、lint 规则或 hook），而不是再记一遍。
 
 ### 目录结构
 
@@ -208,7 +208,7 @@
 - 重复结构或可复用方法 -> `memory/patterns.md`
 - 审阅发现和修改建议 -> `memory/review-findings.md`
 - 未决问题或延期工作 -> `memory/open-items.md`
-- workflow/skill/rule 使用结果、重要建议、失败尝试或用户纠正 -> `memory/outcomes.md`
+- workflow/skill/rule 使用结果、重要建议、失败尝试或用户纠正 -> `memory/outcomes.md`；"不要再这样做"类纠正同时在 `memory/project-overview.md` 的 `Standing corrections` 小节写一行，使其会话开始时重新加载
 - 能提供可复用教训的被拒候选更新 -> `memory/outcomes.md` 或 `experiments/`
 - 凭据、secret、登录状态或个人敏感信息需求，不含真实值 -> `memory/secret-requirements.md`
 - 执行过的复杂操作 -> `workflows/`
