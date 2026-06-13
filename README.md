@@ -60,7 +60,7 @@ Two ways in — pick whichever matches where you are.
 curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/main/AGENTS.md -o AGENTS.md
 ```
 
-Then reopen an AGENTS.md-aware agent, or add the small alias/import shown in the compatibility section for tools that use another filename. To pin a stable release instead of tracking `main`, replace `main` in the URL with a release tag such as `v1.8.0`.
+Then reopen an AGENTS.md-aware agent, or add the small alias/import shown in the compatibility section for tools that use another filename. To pin a stable release instead of tracking `main`, replace `main` in the URL with a release tag such as `v1.9.0`.
 
 **From inside your agent (Codex / Claude Code)** — paste this one line into the chat and let the agent fetch, read, and bootstrap in a single shot:
 
@@ -143,7 +143,7 @@ flowchart LR
 
 New findings are filed by type: source document inventory and useful relationships → `memory/source-index.md` or optional `memory/project-map.md`, project conventions → `rules/`, decisions → `memory/decisions.md`, testability or observability gaps → `memory/open-items.md` or relevant `workflows/`, gotchas → `memory/gotchas.md`, reusable patterns → `memory/patterns.md`, outcomes and user corrections → `memory/outcomes.md`, reusable workflows → `workflows/`, generated review reports → `reports/`, candidate workflows/skills → `experiments/`, current-task scratch output → `tmp/`, runtime-supported skills → `skills/` when useful, review findings → `memory/review-findings.md`, secret requirements without values → `memory/secret-requirements.md`, and unresolved work → `memory/open-items.md`. After each meaningful task, the agent records durable results and appends `.agents/changelog.md`. The maintenance cadence is enforced by `AGENTS.md` itself — **easy to write in, hard to stay** — so notes never pile up into noise.
 
-Evolution is lifecycle-based: memory can be active, stale, deprecated, closed, or pinned; workflows and skills move from candidate to active to deprecated to archived. Health checks look for fitness signals such as fewer repeated mistakes, fewer user corrections, less stale context, higher validated reuse, and less repeated setup effort.
+Evolution is lifecycle-based: memory can be active, stale, deprecated, closed, or pinned; workflows and skills move from candidate to active to deprecated to archived. Health checks look for fitness signals such as fewer repeated mistakes, fewer user corrections, less stale context, higher validated reuse, and less repeated setup effort. To stop the same correction from recurring across sessions, a "do not do this again" correction is pinned into a `Standing corrections` section of `memory/project-overview.md` — the one file reloaded at every session start — and a correction that keeps recurring should graduate from a text note into an executable guard, such as a Claude Code hook, because text rules are followed probabilistically rather than guaranteed.
 
 Candidate rules, workflows, and skills evolve through small add/delete/replace edits backed by real task evidence. Accepted updates need an appropriate validation signal, while rejected candidates stay as negative feedback in `experiments/` or `memory/outcomes.md` when they would prevent repeated mistakes. Reusing a workflow or skill in a different model, tool harness, repository type, or task family requires a focused check before treating it as active guidance.
 
@@ -297,10 +297,10 @@ diff -u AGENTS.md /tmp/AGENTS.latest.md
 To pin a stable release instead of tracking `main`:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.8.0/AGENTS.md -o AGENTS.md
+curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.9.0/AGENTS.md -o AGENTS.md
 ```
 
-Do not let an agent silently replace `AGENTS.md` on a timer. During `.agents/` maintenance, it may check for a newer AgentGo template and suggest an update, but replacement should still require your explicit request or approval. The first comment in `AGENTS.md` carries the template version, for example `AGENTS.md v1.8.0`; release tags are the stable install target.
+Do not let an agent silently replace `AGENTS.md` on a timer. During `.agents/` maintenance, it may check for a newer AgentGo template and suggest an update, but replacement should still require your explicit request or approval. The first comment in `AGENTS.md` carries the template version, for example `AGENTS.md v1.9.0`; release tags are the stable install target.
 
 After updating, restart or rescan your agent:
 

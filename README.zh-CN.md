@@ -60,7 +60,7 @@
 curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/main/AGENTS.zh-CN.md -o AGENTS.md
 ```
 
-然后重新打开支持 AGENTS.md 的 Agent；对使用其他文件名的工具，按下方兼容性说明加一个很小的别名或 import。若要锁定稳定发布版而非跟随 `main`，把 URL 中的 `main` 换成 release tag，例如 `v1.8.0`。
+然后重新打开支持 AGENTS.md 的 Agent；对使用其他文件名的工具，按下方兼容性说明加一个很小的别名或 import。若要锁定稳定发布版而非跟随 `main`，把 URL 中的 `main` 换成 release tag，例如 `v1.9.0`。
 
 **在 Agent 里（Codex / Claude Code）** —— 把这一行贴进对话框，让 Agent 一次性完成拉取、阅读、bootstrap：
 
@@ -143,7 +143,7 @@ flowchart LR
 
 新发现按类型归档：来源文档清单和有用关系 → `memory/source-index.md` 或可选的 `memory/project-map.md`、项目约定 → `rules/`、决策 → `memory/decisions.md`、可测性或可观测性缺口 → `memory/open-items.md` 或相关 `workflows/`、踩坑 → `memory/gotchas.md`、可复用模式 → `memory/patterns.md`、结果和用户纠正 → `memory/outcomes.md`、可复用流程 → `workflows/`、生成的审阅报告 → `reports/`、候选 workflow/skill → `experiments/`、当前任务草稿输出 → `tmp/`、运行时支持的 skills → `skills/`（确有帮助时）、审阅发现 → `memory/review-findings.md`、不含真实值的敏感信息需求 → `memory/secret-requirements.md`、未决事项 → `memory/open-items.md`。每次有意义任务后，Agent 记录持久结果并追加 `.agents/changelog.md`。维护节奏由 `AGENTS.md` 强制——**写入容易，留下来要难**，避免笔记越攒越多变成噪音。
 
-进化按生命周期管理：记忆可以是 active、stale、deprecated、closed 或 pinned；workflow 和 skill 从 candidate 进入 active，再到 deprecated 或 archived。体检会关注适应度信号：重复错误是否减少、用户纠正是否减少、失效上下文是否减少、已验证复用是否增加、重复配置成本是否降低。
+进化按生命周期管理：记忆可以是 active、stale、deprecated、closed 或 pinned；workflow 和 skill 从 candidate 进入 active，再到 deprecated 或 archived。体检会关注适应度信号：重复错误是否减少、用户纠正是否减少、失效上下文是否减少、已验证复用是否增加、重复配置成本是否降低。为避免同一条纠正跨会话反复出现，"不要再这样做"类纠正会固定到 `memory/project-overview.md` 的 `Standing corrections` 小节——这是每次会话开始都会重新加载的那个文件；若某条纠正反复出现，应从文本笔记升级为可执行护栏，例如 Claude Code 的 hook，因为文本规则只是概率性遵守、并非保证。
 
 候选 rules、workflows 和 skills 通过小范围 add/delete/replace 编辑演进，并由真实任务证据支撑。被接受的更新需要合适验证信号；被拒候选若能避免重复错误，则作为负反馈保留在 `experiments/` 或 `memory/outcomes.md`。当 workflow 或 skill 迁移到不同模型、工具 harness、仓库类型或任务族时，先做聚焦检查，再把它视为 active 指导。
 
@@ -297,10 +297,10 @@ diff -u AGENTS.md /tmp/AGENTS.latest.md
 如果要锁定稳定发布版，而不是跟随 `main`：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.8.0/AGENTS.zh-CN.md -o AGENTS.md
+curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.9.0/AGENTS.zh-CN.md -o AGENTS.md
 ```
 
-不要让 Agent 按定时任务静默替换 `AGENTS.md`。`.agents/` 维护时可以检查是否有新版 AgentGo 模板并提出更新建议，但替换仍需要你的明确要求或确认。`AGENTS.md` 首行注释携带模板版本，例如 `AGENTS.md v1.8.0`；稳定安装目标应使用 release tag。
+不要让 Agent 按定时任务静默替换 `AGENTS.md`。`.agents/` 维护时可以检查是否有新版 AgentGo 模板并提出更新建议，但替换仍需要你的明确要求或确认。`AGENTS.md` 首行注释携带模板版本，例如 `AGENTS.md v1.9.0`；稳定安装目标应使用 release tag。
 
 更新后重启或要求 Agent 重扫：
 
