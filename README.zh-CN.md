@@ -147,6 +147,8 @@ flowchart LR
 
 候选 rules、workflows 和 skills 通过小范围 add/delete/replace 编辑演进，并由真实任务证据支撑。被接受的更新需要合适验证信号；被拒候选若能避免重复错误，则作为负反馈保留在 `experiments/` 或 `memory/outcomes.md`。当 workflow 或 skill 迁移到不同模型、工具 harness、仓库类型或任务族时，先做聚焦检查，再把它视为 active 指导。
 
+主动建议是门控行为，不是固定配额。只有近期工作或 `.agents/` 证据显示存在近期机会时，Agent 才应建议下一步，例如重复摩擦、阻塞事项、有真实风险的缺失验证、失效记忆，或 workflow/skill 生命周期变化。证据弱或投机性的想法保持安静；可选建议未经你确认不得执行。
+
 推荐记忆条目字段：`date`、`artifact`、`note`、`evidence`、`status`、`next action`。项目不需要必须使用 git；没有 git 仓库时，`.agents/changelog.md` 仍作为本地审计记录。
 
 ### 验证示例
@@ -300,7 +302,7 @@ diff -u AGENTS.md /tmp/AGENTS.latest.md
 curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.9.0/AGENTS.zh-CN.md -o AGENTS.md
 ```
 
-不要让 Agent 按定时任务静默替换 `AGENTS.md`。`.agents/` 维护时可以检查是否有新版 AgentGo 模板并提出更新建议，但替换仍需要你的明确要求或确认。`AGENTS.md` 首行注释携带模板版本，例如 `AGENTS.md v1.9.0`；稳定安装目标应使用 release tag。
+不要让 Agent 按定时任务静默替换 `AGENTS.md`。`.agents/` 维护时可以检查是否有新版 AgentGo 模板并提出更新建议，但替换仍需要你的明确要求或确认。`AGENTS.md` 首行注释携带模板版本，例如 `AGENTS.md v1.10.0`；稳定安装目标应使用 release tag。
 
 更新后重启或要求 Agent 重扫：
 
@@ -318,7 +320,7 @@ curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.9.0/AGENTS.zh-CN.m
 <details>
 <summary><strong>Agent 会主动提出改进建议吗？</strong></summary>
 
-会，但只作为可选后续。若 Agent 有清晰证据表明某个请求范围外的改进可能有价值，应简短说明建议、理由和风险，然后等待用户决定。未经要求，不执行可选建议；低置信想法不应干扰当前交付。
+会，但只有通过主动建议门控时才提示。Agent 应根据近期工作和 `.agents/` 证据判断建议是否及时、有用、低噪音；不满足时保持安静。确实提出建议时，应保持列表简短，说明证据和风险，然后等你确认再行动。
 
 </details>
 

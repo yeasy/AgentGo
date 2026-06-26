@@ -147,6 +147,8 @@ Evolution is lifecycle-based: memory can be active, stale, deprecated, closed, o
 
 Candidate rules, workflows, and skills evolve through small add/delete/replace edits backed by real task evidence. Accepted updates need an appropriate validation signal, while rejected candidates stay as negative feedback in `experiments/` or `memory/outcomes.md` when they would prevent repeated mistakes. Reusing a workflow or skill in a different model, tool harness, repository type, or task family requires a focused check before treating it as active guidance.
 
+Proactive suggestions are gated, not constant. The agent may suggest a next action only when recent work or `.agents/` evidence points to a near-term opportunity such as repeated friction, a blocking open item, missing validation with real risk, stale memory, or a workflow/skill lifecycle change. Weak or speculative ideas stay silent, and optional suggestions are not executed without your confirmation.
+
 Recommended memory entry shape: `date`, `artifact`, `note`, `evidence`, `status`, and `next action`. The project does not need git; when no git repository exists, `.agents/changelog.md` still acts as the local audit trail.
 
 ### Validation Examples
@@ -300,7 +302,7 @@ To pin a stable release instead of tracking `main`:
 curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.9.0/AGENTS.md -o AGENTS.md
 ```
 
-Do not let an agent silently replace `AGENTS.md` on a timer. During `.agents/` maintenance, it may check for a newer AgentGo template and suggest an update, but replacement should still require your explicit request or approval. The first comment in `AGENTS.md` carries the template version, for example `AGENTS.md v1.9.0`; release tags are the stable install target.
+Do not let an agent silently replace `AGENTS.md` on a timer. During `.agents/` maintenance, it may check for a newer AgentGo template and suggest an update, but replacement should still require your explicit request or approval. The first comment in `AGENTS.md` carries the template version, for example `AGENTS.md v1.10.0`; release tags are the stable install target.
 
 After updating, restart or rescan your agent:
 
@@ -318,7 +320,7 @@ It will, which is why `AGENTS.md` enforces a **maintenance cadence**: on session
 <details>
 <summary><strong>Will the agent proactively suggest improvements?</strong></summary>
 
-Yes, but only as optional follow-up. When the agent has clear evidence that an out-of-scope improvement would likely help, it should briefly explain the suggestion, rationale, and risk, then wait. It should not execute optional suggestions without your request, and it should not distract you with low-confidence ideas.
+Yes, but only when the Proactive Suggestion Gate passes. The agent should use recent work and `.agents/` evidence to decide whether a suggestion is timely, useful, and low-noise; if not, it should stay silent. When it does suggest something, it should keep the list short, explain evidence and risk, then wait for your confirmation before acting.
 
 </details>
 
