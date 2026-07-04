@@ -60,7 +60,7 @@
 curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/main/AGENTS.zh-CN.md -o AGENTS.md
 ```
 
-然后重新打开支持 AGENTS.md 的 Agent；对使用其他文件名的工具，按下方兼容性说明加一个很小的别名或 import。若要锁定稳定发布版而非跟随 `main`，把 URL 中的 `main` 换成 release tag，例如 `v1.11.0`。
+然后重新打开支持 AGENTS.md 的 Agent；对使用其他文件名的工具，按下方兼容性说明加一个很小的别名或 import。若要锁定稳定发布版而非跟随 `main`，把 URL 中的 `main` 换成 release tag，例如 `v1.12.0`。
 
 **在 Agent 里（Codex / Claude Code）** —— 把这一行贴进对话框，让 Agent 一次性完成拉取、阅读、bootstrap：
 
@@ -299,10 +299,10 @@ diff -u AGENTS.md /tmp/AGENTS.latest.md
 如果要锁定稳定发布版，而不是跟随 `main`：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.11.0/AGENTS.zh-CN.md -o AGENTS.md
+curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.12.0/AGENTS.zh-CN.md -o AGENTS.md
 ```
 
-不要让 Agent 按定时任务静默替换 `AGENTS.md`。`.agents/` 维护时可以检查是否有新版 AgentGo 模板并提出更新建议，但替换仍需要你的明确要求或确认。`AGENTS.md` 首行注释携带模板版本，例如 `AGENTS.md v1.11.0`；稳定安装目标应使用 release tag。
+不要让 Agent 按定时任务静默替换 `AGENTS.md`。`.agents/` 维护时可以检查是否有新版 AgentGo 模板并提出更新建议，但替换仍需要你的明确要求或确认。`AGENTS.md` 首行注释携带模板版本，例如 `AGENTS.md v1.12.0`；稳定安装目标应使用 release tag。
 
 更新后重启或要求 Agent 重扫：
 

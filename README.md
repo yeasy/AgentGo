@@ -60,7 +60,7 @@ Two ways in — pick whichever matches where you are.
 curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/main/AGENTS.md -o AGENTS.md
 ```
 
-Then reopen an AGENTS.md-aware agent, or add the small alias/import shown in the compatibility section for tools that use another filename. To pin a stable release instead of tracking `main`, replace `main` in the URL with a release tag such as `v1.11.0`.
+Then reopen an AGENTS.md-aware agent, or add the small alias/import shown in the compatibility section for tools that use another filename. To pin a stable release instead of tracking `main`, replace `main` in the URL with a release tag such as `v1.12.0`.
 
 **From inside your agent (Codex / Claude Code)** — paste this one line into the chat and let the agent fetch, read, and bootstrap in a single shot:
 
@@ -299,10 +299,10 @@ diff -u AGENTS.md /tmp/AGENTS.latest.md
 To pin a stable release instead of tracking `main`:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.11.0/AGENTS.md -o AGENTS.md
+curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.12.0/AGENTS.md -o AGENTS.md
 ```
 
-Do not let an agent silently replace `AGENTS.md` on a timer. During `.agents/` maintenance, it may check for a newer AgentGo template and suggest an update, but replacement should still require your explicit request or approval. The first comment in `AGENTS.md` carries the template version, for example `AGENTS.md v1.11.0`; release tags are the stable install target.
+Do not let an agent silently replace `AGENTS.md` on a timer. During `.agents/` maintenance, it may check for a newer AgentGo template and suggest an update, but replacement should still require your explicit request or approval. The first comment in `AGENTS.md` carries the template version, for example `AGENTS.md v1.12.0`; release tags are the stable install target.
 
 After updating, restart or rescan your agent:
 
