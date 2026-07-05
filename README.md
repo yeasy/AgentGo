@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <sub>Best practices baked in. No custom setup required.</sub>
+  <sub>Best practices baked in — get more out of whatever model you run. No custom setup.</sub>
 </p>
 
 <p align="center">English | <a href="./README.zh-CN.md">简体中文</a></p>
@@ -32,7 +32,7 @@
 
 ## What It Solves
 
-Models are already capable enough. What actually blocks product quality is **how agent-engineering best practices land in your own project** — and **you shouldn't have to research and configure that yourself**:
+A capable model still underperforms its potential on your project — not for lack of raw ability, but for lack of the structure, memory, and guardrails that let it work well *here*. That scaffolding is **agent-engineering best practice**, and **you shouldn't have to research and configure it yourself**:
 
 - Harness design, context management, memory upkeep, safety guardrails… top-tier practices are scattered across blog posts
 - Claude Code / Codex / Cursor / Copilot / Windsurf / Gemini each have their own config format, and the same rules get rewritten over and over
@@ -42,6 +42,7 @@ Models are already capable enough. What actually blocks product quality is **how
 
 |                          | Without AgentGo                                | With AgentGo                                          |
 |:-------------------------|:-----------------------------------------------|:------------------------------------------------------|
+| **What a model delivers**| Same model, uneven — repeats mistakes, loses context, needs constant re-steering | Same model, steadier — persistent memory, structure, and guardrails raise the floor |
 | **Cross-tool reuse**     | One ruleset per tool, rewrite when you switch workspace | One `AGENTS.md` travels with the project, works everywhere |
 | **Best practices**       | Scattered, re-researched per project           | Out of the box: conventions, flow, safety, upkeep cadence |
 | **Self-improvement**     | Needs constant human reminders                 | Evolves through evidence-gated, reversible learning   |
