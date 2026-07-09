@@ -6,10 +6,10 @@ Thanks for helping! The bar for changes: **stay lean and generic** — if a chan
 
 English and Simplified Chinese files are maintained in parallel:
 
-- `AGENTS.md` and `AGENTS.zh-CN.md` must have the **same line count** and the **same version marker** in line 1.
-- `README.md` and `README.zh-CN.md` must have their **headings on the same line numbers**.
+- `AGENTS.md` and `AGENTS.zh-CN.md` must keep matching **version markers**, mapped public **section structure**, failure-mode IDs, and critical protocol contracts.
+- `README.md` and `README.zh-CN.md` must keep corresponding headings and stable-version examples synchronized.
 
-Every PR that touches one language must apply the same-shaped edit to the other. CI (`.github/workflows/docs.yml`) fails on drift.
+Every PR that changes meaning in one language must update the other. Contract tests validate semantic structure without requiring identical physical line counts or heading line numbers; CI (`.github/workflows/docs.yml`) fails on covered drift.
 
 ## Versioning and releases
 
