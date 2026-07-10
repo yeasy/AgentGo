@@ -1,7 +1,10 @@
 import importlib.util
+import io
 import re
+import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -18,8 +21,8 @@ class DocsContractTests(unittest.TestCase):
     def setUpClass(cls):
         cls.english_path = ROOT / "AGENTS.md"
         cls.chinese_path = ROOT / "AGENTS.zh-CN.md"
-        cls.english = cls.english_path.read_text(encoding="utf-8")
-        cls.chinese = cls.chinese_path.read_text(encoding="utf-8")
+        cls.english = cls.english_path.read_bytes().decode("utf-8")
+        cls.chinese = cls.chinese_path.read_bytes().decode("utf-8")
 
     def assert_single_mutation_rejected(
         self,
@@ -58,6 +61,102 @@ class DocsContractTests(unittest.TestCase):
                     validate_docs.MAX_BYTES,
                     f"{path.name} exceeds {validate_docs.MAX_BYTES} bytes",
                 )
+
+    def test_protocol_content_digests_match_release_lock(self):
+        documents = {
+            "AGENTS.md": self.english,
+            "AGENTS.zh-CN.md": self.chinese,
+        }
+        self.assertEqual(
+            {
+                name: validate_docs.content_digest(text)
+                for name, text in documents.items()
+            },
+            validate_docs.PROTOCOL_CONTENT_DIGESTS,
+        )
+        self.assertEqual(
+            {validate_docs.extract_version(text) for text in documents.values()},
+            {validate_docs.RELEASE_LOCK_VERSION},
+        )
+
+    def test_content_lock_rejects_known_markdown_context_bypasses(self):
+        authority = next(
+            line
+            for line in self.english.splitlines()
+            if line.startswith("Only project-tree `AGENTS.md`")
+        )
+        directory = validate_docs.extract_heading_section(
+            self.english,
+            3,
+            "Directory Layout",
+        )
+        tree_match = re.search(
+            r"^```[ \t]*\n.*?^```[ \t]*$",
+            directory,
+            flags=re.MULTILINE | re.DOTALL,
+        )
+        self.assertIsNotNone(tree_match)
+        tree = tree_match.group(0)
+        mutations = (
+            (
+                authority,
+                f'[visible](<foo)bar> "\n{authority}\n")',
+            ),
+            (
+                authority,
+                f"> <div>\n> raw\n<x-agentgo>\n{authority}\n</x-agentgo>",
+            ),
+            (
+                tree,
+                f"<x-agentgo>\n{tree}\n</x-agentgo>",
+            ),
+        )
+        for old, new in mutations:
+            with self.subTest(replacement=new.splitlines()[0]):
+                mutated = self.english.replace(old, new, 1)
+                errors = validate_docs.validate_texts(
+                    mutated,
+                    self.chinese,
+                    max_bytes=100_000,
+                )
+                self.assertIn(
+                    "AGENTS.md content differs from the v1.12.1 release lock",
+                    errors,
+                )
+
+    def test_oversized_documents_skip_deep_parsing(self):
+        with mock.patch.object(
+            validate_docs,
+            "mask_fenced_code_blocks",
+            side_effect=AssertionError("deep parser must not run"),
+        ):
+            errors = validate_docs.validate_texts(
+                self.english + "<" * 200_000,
+                self.chinese + "<" * 200_000,
+            )
+        self.assertEqual(len(errors), 2)
+        self.assertTrue(all("limit is" in error for error in errors))
+
+    def test_main_rejects_symlinked_protocol_artifacts(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            target = root / "canonical-english.md"
+            target.write_bytes(self.english.encode("utf-8"))
+            (root / "AGENTS.md").symlink_to(target.name)
+            (root / "AGENTS.zh-CN.md").write_bytes(
+                self.chinese.encode("utf-8")
+            )
+            stderr = io.StringIO()
+            stdout = io.StringIO()
+            with (
+                mock.patch.object(validate_docs, "ROOT", root),
+                mock.patch("sys.stderr", stderr),
+                mock.patch("sys.stdout", stdout),
+            ):
+                result = validate_docs.main()
+        self.assertEqual(result, 1)
+        self.assertIn("AGENTS.md must be a regular file", stderr.getvalue())
+        self.assertEqual(stdout.getvalue(), "")
 
     def test_first_line_versions_match_semver(self):
         english_version = validate_docs.extract_version(self.english)
@@ -165,7 +264,7 @@ class DocsContractTests(unittest.TestCase):
             ),
         )
 
-    def test_validator_ignores_h3_examples_inside_fenced_code(self):
+    def test_content_lock_rejects_fenced_h3_example_drift(self):
         old = "## Startup Instructions\n"
         self.assertEqual(self.english.count(old), 1)
         english = self.english.replace(
@@ -179,7 +278,10 @@ class DocsContractTests(unittest.TestCase):
             self.chinese,
             max_bytes=100_000,
         )
-        self.assertEqual(errors, [])
+        self.assertEqual(
+            errors,
+            ["AGENTS.md content differs from the v1.12.1 release lock"],
+        )
 
     def test_validator_rejects_marker_relocated_into_fenced_code(self):
         marker = (
@@ -801,7 +903,7 @@ class DocsContractTests(unittest.TestCase):
             ),
         )
 
-    def test_validator_does_not_require_equal_physical_line_counts(self):
+    def test_content_lock_rejects_physical_line_drift(self):
         chinese_with_extra_blank_line = self.chinese + "\n"
         self.assertNotEqual(
             len(self.english.splitlines()),
@@ -813,7 +915,10 @@ class DocsContractTests(unittest.TestCase):
             chinese_with_extra_blank_line,
             max_bytes=100_000,
         )
-        self.assertEqual(errors, [])
+        self.assertEqual(
+            errors,
+            ["AGENTS.zh-CN.md content differs from the v1.12.1 release lock"],
+        )
 
     def test_readme_stable_examples_match_protocol_version(self):
         version = validate_docs.extract_version(self.english)

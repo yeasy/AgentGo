@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import re
+import stat
 import sys
 from hashlib import sha256
 from pathlib import Path
@@ -11,6 +12,11 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 MAX_BYTES = 28_672
+RELEASE_LOCK_VERSION = "1.12.1"
+PROTOCOL_CONTENT_DIGESTS = {
+    "AGENTS.md": "95922355f2fa3eec04ca2c34e468b6b181c53b35156475fae69f08547c571084",
+    "AGENTS.zh-CN.md": "6e63fb29305466449c42d7502ecb2629df68661cab57e19654c11cf2667eae47",
+}
 NUMERIC_IDENTIFIER = r"(?:0|[1-9][0-9]*)"
 NON_NUMERIC_IDENTIFIER = r"(?:[0-9]*[A-Za-z-][0-9A-Za-z-]*)"
 PRERELEASE_IDENTIFIER = (
@@ -472,6 +478,25 @@ def extract_version(text: str) -> str | None:
     return match.group("version") if match else None
 
 
+def content_digest(text: str) -> str:
+    """Return the release-lock digest for a protocol document."""
+    return sha256(text.encode("utf-8")).hexdigest()
+
+
+def read_protocol_file(path: Path) -> str:
+    """Read one UTF-8 protocol artifact without following non-regular files."""
+    try:
+        mode = path.lstat().st_mode
+    except OSError as error:
+        raise ValueError(f"{path.name} must be a regular file") from error
+    if not stat.S_ISREG(mode):
+        raise ValueError(f"{path.name} must be a regular file")
+    try:
+        return path.read_bytes().decode("utf-8")
+    except (OSError, UnicodeError) as error:
+        raise ValueError(f"{path.name} must be readable UTF-8") from error
+
+
 def leading_indent_columns(line: str) -> int:
     """Measure leading Markdown indentation with four-column tab stops."""
     columns = 0
@@ -775,10 +800,12 @@ def validate_texts(
 ) -> list[str]:
     errors: list[str] = []
     documents = (("AGENTS.md", english), ("AGENTS.zh-CN.md", chinese))
+    oversized = False
 
     for name, text in documents:
         size = len(text.encode("utf-8"))
         if size > max_bytes:
+            oversized = True
             errors.append(f"{name} is {size} bytes; limit is {max_bytes}")
 
     english_version = extract_version(english)
@@ -792,6 +819,16 @@ def validate_texts(
             errors.append(
                 "version markers differ: "
                 f"AGENTS.md={english_version}, AGENTS.zh-CN.md={chinese_version}"
+            )
+
+    if oversized:
+        return errors
+
+    for name, text in documents:
+        if content_digest(text) != PROTOCOL_CONTENT_DIGESTS[name]:
+            errors.append(
+                f"{name} content differs from the v{RELEASE_LOCK_VERSION} "
+                "release lock"
             )
 
     expected_english_h2 = [pair[0] for pair in H2_PAIRS]
@@ -847,8 +884,12 @@ def validate_texts(
 def main() -> int:
     english_path = ROOT / "AGENTS.md"
     chinese_path = ROOT / "AGENTS.zh-CN.md"
-    english = english_path.read_text(encoding="utf-8")
-    chinese = chinese_path.read_text(encoding="utf-8")
+    try:
+        english = read_protocol_file(english_path)
+        chinese = read_protocol_file(chinese_path)
+    except ValueError as error:
+        print(f"ERROR: {error}", file=sys.stderr)
+        return 1
     errors = validate_texts(english, chinese)
 
     if errors:
