@@ -67,6 +67,14 @@ class DocsContractTests(unittest.TestCase):
         self.assertEqual(english_version, chinese_version)
         self.assertRegex(english_version, re.compile(validate_docs.SEMVER_PATTERN))
 
+    def test_validator_rejects_numeric_prerelease_with_leading_zero(self):
+        self.assert_single_mutation_rejected(
+            filename="AGENTS.md",
+            old="AGENTS.md v1.12.1 |",
+            new="AGENTS.md v1.12.1-01 |",
+            expected_error="AGENTS.md first line lacks a valid SemVer marker",
+        )
+
     def test_h2_sections_keep_public_mapping_and_order(self):
         english_h2 = validate_docs.extract_h2(self.english)
         chinese_h2 = validate_docs.extract_h2(self.chinese)
@@ -170,6 +178,44 @@ class DocsContractTests(unittest.TestCase):
                 "confirmation"
             ),
         )
+
+    def test_validator_rejects_marker_in_blockquote_fenced_code(self):
+        marker = (
+            "| Delete `rules/`, `workflows/`, `reports/`, `experiments/`, or "
+            "`skills/` | Requires confirmation |"
+        )
+        self.assert_single_mutation_rejected(
+            filename="AGENTS.md",
+            old=marker,
+            new=(
+                "| Delete persistent capability files | Free | No confirmation. |"
+                f"\n\n> ```text\n> {marker}\n> ```"
+            ),
+            expected_error=(
+                "AGENTS.md is missing contract: persistent capability deletion "
+                "confirmation"
+            ),
+        )
+
+    def test_validator_rejects_marker_in_indented_code(self):
+        marker = (
+            "| Delete `rules/`, `workflows/`, `reports/`, `experiments/`, or "
+            "`skills/` | Requires confirmation |"
+        )
+        for indentation in ("    ", "\t", " \t"):
+            with self.subTest(indentation=repr(indentation)):
+                self.assert_single_mutation_rejected(
+                    filename="AGENTS.md",
+                    old=marker,
+                    new=(
+                        "| Delete persistent capability files | Free | "
+                        f"No confirmation. |\n\n{indentation}{marker}"
+                    ),
+                    expected_error=(
+                        "AGENTS.md is missing contract: persistent capability "
+                        "deletion confirmation"
+                    ),
+                )
 
     def test_validator_rejects_h3_moved_under_wrong_parent(self):
         self.assert_single_mutation_rejected(
@@ -282,6 +328,17 @@ class DocsContractTests(unittest.TestCase):
             filename="AGENTS.md",
             old="installing or running network-fetched code",
             new="running network-fetched code",
+            expected_error=(
+                "AGENTS.md is missing contract: network-fetched code installation "
+                "requires confirmation"
+            ),
+        )
+
+    def test_validator_rejects_negated_network_code_confirmation(self):
+        self.assert_single_mutation_rejected(
+            filename="AGENTS.md",
+            old="—require explicit in-context user confirmation.",
+            new="—do not require explicit in-context user confirmation.",
             expected_error=(
                 "AGENTS.md is missing contract: network-fetched code installation "
                 "requires confirmation"

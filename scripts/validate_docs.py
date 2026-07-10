@@ -10,10 +10,17 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 MAX_BYTES = 28_672
+NUMERIC_IDENTIFIER = r"(?:0|[1-9]\d*)"
+NON_NUMERIC_IDENTIFIER = r"(?:\d*[A-Za-z-][0-9A-Za-z-]*)"
+PRERELEASE_IDENTIFIER = (
+    rf"(?:{NUMERIC_IDENTIFIER}|{NON_NUMERIC_IDENTIFIER})"
+)
+BUILD_IDENTIFIER = r"[0-9A-Za-z-]+"
 SEMVER_PATTERN = (
-    r"(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)"
-    r"(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?"
-    r"(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?"
+    rf"{NUMERIC_IDENTIFIER}\.{NUMERIC_IDENTIFIER}\.{NUMERIC_IDENTIFIER}"
+    rf"(?:-{PRERELEASE_IDENTIFIER}"
+    rf"(?:\.{PRERELEASE_IDENTIFIER})*)?"
+    rf"(?:\+{BUILD_IDENTIFIER}(?:\.{BUILD_IDENTIFIER})*)?"
 )
 VERSION_RE = re.compile(
     rf"^<!-- AGENTS\.md v(?P<version>{SEMVER_PATTERN}) \| AgentGo \| "
@@ -361,6 +368,26 @@ SEMANTIC_MARKERS = {
     },
 }
 
+NORMATIVE_LINE_PATTERNS = {
+    (
+        "AGENTS.md",
+        "network-fetched code installation requires confirmation",
+    ): re.compile(
+        r"^- \*\*High-risk side effects\*\*—"
+        r"(?=[^\r\n]*installing or running network-fetched code)"
+        r"[^\r\n]*—require explicit in-context user confirmation\.$",
+        re.MULTILINE,
+    ),
+    ("AGENTS.zh-CN.md", "安装网络获取代码需当场确认"): re.compile(
+        r"^- \*\*高风险副作用\*\*——"
+        r"(?=[^\r\n]*安装或运行网络获取的代码)"
+        r"[^\r\n]*——必须用户当场明确确认。$",
+        re.MULTILINE,
+    ),
+}
+
+BLOCKQUOTE_PREFIX_RE = re.compile(r" {0,3}>[ \t]?")
+
 
 def extract_version(text: str) -> str | None:
     first_line = text.splitlines()[0] if text.splitlines() else ""
@@ -368,31 +395,74 @@ def extract_version(text: str) -> str | None:
     return match.group("version") if match else None
 
 
+def split_blockquote_prefix(line: str) -> tuple[int, str]:
+    """Return the CommonMark blockquote depth and content of one line."""
+    depth = 0
+    offset = 0
+    while match := BLOCKQUOTE_PREFIX_RE.match(line, offset):
+        depth += 1
+        offset = match.end()
+    return depth, line[offset:]
+
+
+def leading_indent_columns(line: str) -> int:
+    """Measure leading Markdown indentation with four-column tab stops."""
+    columns = 0
+    for character in line:
+        if character == " ":
+            columns += 1
+        elif character == "\t":
+            columns += 4 - columns % 4
+        else:
+            break
+    return columns
+
+
 def mask_fenced_code_blocks(text: str) -> str:
+    """Mask fenced and indented code while preserving character positions."""
     masked: list[str] = []
     fence_char: str | None = None
     fence_length = 0
+    fence_blockquote_depth = 0
 
     for line in text.splitlines(keepends=True):
-        if fence_char is None:
-            opening = re.match(r"^[ \t]{0,3}(?P<fence>`{3,}|~{3,})", line)
-            if opening is None:
-                masked.append(line)
-                continue
+        blockquote_depth, content = split_blockquote_prefix(line)
+
+        if (
+            fence_char is not None
+            and blockquote_depth < fence_blockquote_depth
+        ):
+            fence_char = None
+            fence_length = 0
+            fence_blockquote_depth = 0
+
+        if fence_char is not None:
+            closing = re.fullmatch(
+                rf" {{0,3}}{re.escape(fence_char)}{{{fence_length},}}"
+                r"[ \t]*(?:\r?\n)?",
+                content,
+            )
+            if closing is not None and blockquote_depth == fence_blockquote_depth:
+                fence_char = None
+                fence_length = 0
+                fence_blockquote_depth = 0
+            masked.append(re.sub(r"[^\r\n]", " ", line))
+            continue
+
+        if leading_indent_columns(content) >= 4:
+            masked.append(re.sub(r"[^\r\n]", " ", line))
+            continue
+
+        opening = re.match(r"^ {0,3}(?P<fence>`{3,}|~{3,})", content)
+        if opening is not None:
             fence = opening.group("fence")
             fence_char = fence[0]
             fence_length = len(fence)
-        else:
-            closing = re.fullmatch(
-                rf"[ \t]{{0,3}}{re.escape(fence_char)}{{{fence_length},}}"
-                r"[ \t]*(?:\r?\n)?",
-                line,
-            )
-            if closing is not None:
-                fence_char = None
-                fence_length = 0
+            fence_blockquote_depth = blockquote_depth
+            masked.append(re.sub(r"[^\r\n]", " ", line))
+            continue
 
-        masked.append(re.sub(r"[^\r\n]", " ", line))
+        masked.append(line)
 
     return "".join(masked)
 
@@ -443,7 +513,15 @@ def validate_semantics(english: str, chinese: str) -> list[str]:
                 if (name, contract) in FENCED_MARKER_CONTRACTS
                 else mask_fenced_code_blocks(section)
             )
-            if not section or not all(marker in searchable for marker in markers):
+            normative_line = NORMATIVE_LINE_PATTERNS.get((name, contract))
+            if (
+                not section
+                or not all(marker in searchable for marker in markers)
+                or (
+                    normative_line is not None
+                    and normative_line.search(searchable) is None
+                )
+            ):
                 errors.append(f"{name} is missing contract: {contract}")
     return errors
 
