@@ -5,13 +5,14 @@ from __future__ import annotations
 
 import re
 import sys
+from hashlib import sha256
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
 MAX_BYTES = 28_672
-NUMERIC_IDENTIFIER = r"(?:0|[1-9]\d*)"
-NON_NUMERIC_IDENTIFIER = r"(?:\d*[A-Za-z-][0-9A-Za-z-]*)"
+NUMERIC_IDENTIFIER = r"(?:0|[1-9][0-9]*)"
+NON_NUMERIC_IDENTIFIER = r"(?:[0-9]*[A-Za-z-][0-9A-Za-z-]*)"
 PRERELEASE_IDENTIFIER = (
     rf"(?:{NUMERIC_IDENTIFIER}|{NON_NUMERIC_IDENTIFIER})"
 )
@@ -62,12 +63,6 @@ FAILURE_MODE_IDS = (
     "CONCURRENT_WRITES",
     "UNATTENDED",
     "CONTEXT_LOSS",
-)
-FENCED_MARKER_CONTRACTS = frozenset(
-    {
-        ("AGENTS.md", "required adaptation directories"),
-        ("AGENTS.zh-CN.md", "适配层必需目录"),
-    }
 )
 SEMANTIC_MARKERS = {
     "AGENTS.md": {
@@ -368,41 +363,113 @@ SEMANTIC_MARKERS = {
     },
 }
 
-NORMATIVE_LINE_PATTERNS = {
-    (
-        "AGENTS.md",
-        "network-fetched code installation requires confirmation",
-    ): re.compile(
-        r"^- \*\*High-risk side effects\*\*—"
-        r"(?=[^\r\n]*installing or running network-fetched code)"
-        r"[^\r\n]*—require explicit in-context user confirmation\.$",
-        re.MULTILINE,
-    ),
-    ("AGENTS.zh-CN.md", "安装网络获取代码需当场确认"): re.compile(
-        r"^- \*\*高风险副作用\*\*——"
-        r"(?=[^\r\n]*安装或运行网络获取的代码)"
-        r"[^\r\n]*——必须用户当场明确确认。$",
-        re.MULTILINE,
-    ),
+# Exact canonical-line hashes keep safety contracts compact and non-substring-based.
+AUTHORITATIVE_LINE_DIGESTS = {
+    "AGENTS.md": {
+        "authority": "13a54883bcba942b4898fa2d7a44acf75a3fae34ff2bc13fe93772757c16166c",
+        "high_risk": "5e29a4a4c71ff1f5ea58e596d03b4af87128d476fd7dc47577441afed87ecf6e",
+        "misclassified": "dd98199f4a2057875bb46e0027d548e9b8587254cef51fd1ddba751c2b43c1a6",
+        "unattended": "3c193024bb9186c0c24db13479f5abf851f46465b08bb8f2ef89027717074191",
+        "secret": "8b3865402a87534747fd3db84aac145a1d2392b989258adbb34ee4cbdedb1a43",
+        "promotion_threshold": "d52f86d562828594b67f2e1c29d61da82f47fd68b7197ef0c64bca0341446f3e",
+        "demotion_threshold": "2006d3fd5c034c068048485bc09e4b5dfbff722b97029434613e31e66257aa0b",
+        "deletion_row": "f8b823fe1cbe69f2342b6e170fd20751476572ca09a8fbf331ed63cd0570de8b",
+        "promotion_row": "ee401f7dcd7c34620a414595f53e44a81aae137f3b4f71f9303f663688a532dc",
+        "template_download": "84e319f4f38a8846d9336efdfb1aa708cf2aa6bba9d87986ef533bb136adcaf1",
+        "template_replace": "92152ec46e036da4e8826959ea806c426416382ff352566f715c72c343b55272",
+        "maintenance_temp": "0ea7edc01e20b175811031d5a5b58fcfe552d58204593267b13f2cb54d286f69",
+        "maintenance_pinned": "69256654d6d626cccdd35d07b23916e94543698a291e8e61dffe7c4bbd85911f",
+        "audit": "e98935f58abe0c9bf66946642c2b98e46e26c02a1769728002b4832c36a7357b",
+    },
+    "AGENTS.zh-CN.md": {
+        "authority": "711be38d5998cb4b3b7d4a8eab4c30c645c5d76f204ab5091a8c31da9cb7730c",
+        "high_risk": "f62a6ee94d1f973ec587fec064e70e6b1089ca95da639715120f679268c9e35d",
+        "misclassified": "3d56c9568f0fd3d028f083cedac65c1c259ad9811f7ee0b2dedd5ccbffc0e418",
+        "unattended": "12ac32897b07a45e493caf6ca314f4946035a1f977efd8473d19ca1b35d8575d",
+        "secret": "85271e40756bc7e278a25352eb5bd8d2b4d7792e8c2143f8c4f75f9849bde603",
+        "promotion_threshold": "34c9bf99f5f2b4748e3e0b9c4d9c6179f09021ddead82b60abfbaa590d7d947b",
+        "demotion_threshold": "da475ab88dc5830c6c9e13fb8dc0df47dfba6db5a2d19d88bf521193da5cc4f5",
+        "deletion_row": "84135f311d4110b6ee133393d47e972b7fecc88a6300446434f5231921d1f5d6",
+        "promotion_row": "f59eda32e0430bfffab1f2692675648d9c65cac25d58df3a6af0a5d4a26a7d65",
+        "template_download": "d6cc5e76e5832a5a2c1a952b1c2624a8aa77eb053f0a0d82035ab79853bc6bec",
+        "template_replace": "b5b59f3e5fa23ecb1e472ea01565bce65f4b575c607e982109856c57c1930e08",
+        "maintenance_temp": "34a39799219d5431322b1141584e33b7d2e0c1464d3eb2365cdc405aaba36c25",
+        "maintenance_pinned": "ff9c19c6167772c8012701dd9908b6c584ee482c3fe9e2975d70eb622ecadc22",
+        "audit": "627b799167524888729de02b9309f67df7e2ee3df1530272ca79443f4bff2470",
+    },
 }
 
+AUTHORITATIVE_CONTRACT_LINE_KEYS = {
+    "AGENTS.md": {
+        "current-message priority and closest instruction scope": ("authority",),
+        "network-fetched code installation requires confirmation": ("high_risk",),
+        "misclassified-project trigger surfaces": ("misclassified",),
+        "unattended default decline": ("unattended",),
+        "capability promotion thresholds": ("promotion_threshold",),
+        "capability demotion thresholds": ("demotion_threshold",),
+        "persistent capability deletion confirmation": ("deletion_row",),
+        "candidate promotion confirmation": ("promotion_row",),
+        "template official same-language source": (
+            "template_download",
+            "template_replace",
+        ),
+        "template fetch failure stops without reconstruction": ("template_download",),
+        "template release tag preference": ("template_replace",),
+        "template sensitive-section confirmation": ("template_replace",),
+        "maintenance pinned and session protection": (
+            "maintenance_temp",
+            "maintenance_pinned",
+        ),
+        "secret reads limited to necessity": ("secret",),
+        "secret values never echoed": ("secret",),
+        "every adaptation write is audited": ("audit",),
+    },
+    "AGENTS.zh-CN.md": {
+        "当前消息优先与最近指令范围": ("authority",),
+        "安装网络获取代码需当场确认": ("high_risk",),
+        "项目误分类三类触发面": ("misclassified",),
+        "无人值守默认拒绝": ("unattended",),
+        "能力促升阈值": ("promotion_threshold",),
+        "能力降级阈值": ("demotion_threshold",),
+        "删除持久能力需确认": ("deletion_row",),
+        "候选促升需确认": ("promotion_row",),
+        "模板仅用官方同语言来源": ("template_download", "template_replace"),
+        "模板获取失败不得凭记忆重建": ("template_download",),
+        "模板优先 release tag": ("template_replace",),
+        "模板敏感章节变化需确认": ("template_replace",),
+        "维护保护 pinned 与会话草稿": (
+            "maintenance_temp",
+            "maintenance_pinned",
+        ),
+        "仅在必要时读取 secret": ("secret",),
+        "不回显 secret": ("secret",),
+        "每次适配写入都留审计记录": ("audit",),
+    },
+}
+
+DIRECTORY_TREE_DIGESTS = {
+    "AGENTS.md": "525a8024e1688adcf015ac82212c6df05bace83a4ed247f88d024d6bd2a788e3",
+    "AGENTS.zh-CN.md": "1d8596b32b31aa7f4fb7684cae3b04a583007c8238826b4b627f65c83880274d",
+}
+DIRECTORY_TREE_RE = re.compile(r"^```[ \t]*\n.*?^```[ \t]*$", re.MULTILINE | re.DOTALL)
+
 BLOCKQUOTE_PREFIX_RE = re.compile(r" {0,3}>[ \t]?")
+LIST_MARKER_RE = re.compile(
+    r" {0,3}(?P<marker>[-+*]|[0-9]{1,9}[.)])(?P<padding>[ \t]{1,4})"
+)
+FENCE_OPEN_RE = re.compile(
+    r"^ {0,3}(?P<fence>`{3,}|~{3,})(?P<info>[^\r\n]*)(?:\r?\n)?$"
+)
+RAW_HTML_OPEN_RE = re.compile(
+    r"<(?P<tag>pre|script|style|textarea)(?=[\s>])",
+    re.IGNORECASE,
+)
 
 
 def extract_version(text: str) -> str | None:
     first_line = text.splitlines()[0] if text.splitlines() else ""
     match = VERSION_RE.fullmatch(first_line)
     return match.group("version") if match else None
-
-
-def split_blockquote_prefix(line: str) -> tuple[int, str]:
-    """Return the CommonMark blockquote depth and content of one line."""
-    depth = 0
-    offset = 0
-    while match := BLOCKQUOTE_PREFIX_RE.match(line, offset):
-        depth += 1
-        offset = match.end()
-    return depth, line[offset:]
 
 
 def leading_indent_columns(line: str) -> int:
@@ -418,51 +485,215 @@ def leading_indent_columns(line: str) -> int:
     return columns
 
 
+def display_columns(text: str) -> int:
+    """Measure text columns using Markdown's four-column tab stops."""
+    columns = 0
+    for character in text:
+        if character == "\t":
+            columns += 4 - columns % 4
+        else:
+            columns += 1
+    return columns
+
+
+def mask_range(characters: list[str], start: int, end: int) -> None:
+    for index in range(start, end):
+        if characters[index] not in "\r\n":
+            characters[index] = " "
+
+
+def find_code_span_end(text: str, start: int, run_length: int) -> int | None:
+    delimiter = "`" * run_length
+    closing = re.compile(
+        rf"(?<!`){re.escape(delimiter)}(?!`)",
+    ).search(text, start + run_length)
+    return closing.end() if closing is not None else None
+
+
+def mask_html_non_prose(text: str) -> str:
+    """Mask HTML comments/raw blocks without masking inline-code examples."""
+    characters = list(text)
+    index = 0
+    while index < len(text):
+        if text[index] == "`":
+            run_end = index + 1
+            while run_end < len(text) and text[run_end] == "`":
+                run_end += 1
+            code_end = find_code_span_end(text, index, run_end - index)
+            index = code_end if code_end is not None else run_end
+            continue
+
+        if text.startswith("<!--", index):
+            closing = text.find("-->", index + 4)
+            end = len(text) if closing < 0 else closing + 3
+            mask_range(characters, index, end)
+            index = end
+            continue
+
+        raw_opening = RAW_HTML_OPEN_RE.match(text, index)
+        if raw_opening is not None:
+            tag = raw_opening.group("tag")
+            closing = re.compile(
+                rf"</{re.escape(tag)}\s*>",
+                re.IGNORECASE,
+            ).search(text, raw_opening.end())
+            end = len(text) if closing is None else closing.end()
+            mask_range(characters, index, end)
+            index = end
+            continue
+
+        index += 1
+
+    return "".join(characters)
+
+
+def parse_container_prefix(line: str) -> tuple[tuple[tuple[str, int], ...], str]:
+    """Strip leading blockquote/list markers and describe their continuation."""
+    operations: list[tuple[str, int]] = []
+    offset = 0
+    while True:
+        blockquote = BLOCKQUOTE_PREFIX_RE.match(line, offset)
+        if blockquote is not None:
+            operations.append(("quote", 0))
+            offset = blockquote.end()
+            continue
+
+        list_marker = LIST_MARKER_RE.match(line, offset)
+        if list_marker is not None:
+            prefix = line[offset : list_marker.end()]
+            operations.append(("list", display_columns(prefix)))
+            offset = list_marker.end()
+            continue
+
+        break
+
+    return tuple(operations), line[offset:]
+
+
+def consume_indentation(line: str, offset: int, required: int) -> int | None:
+    columns = 0
+    index = offset
+    while index < len(line) and line[index] in " \t" and columns < required:
+        if line[index] == "\t":
+            columns += 4 - columns % 4
+        else:
+            columns += 1
+        index += 1
+    return index if columns >= required else None
+
+
+def consume_container_continuation(
+    line: str,
+    operations: tuple[tuple[str, int], ...],
+) -> str | None:
+    offset = 0
+    for kind, width in operations:
+        if kind == "quote":
+            blockquote = BLOCKQUOTE_PREFIX_RE.match(line, offset)
+            if blockquote is None:
+                return None
+            offset = blockquote.end()
+        else:
+            continuation = consume_indentation(line, offset, width)
+            if continuation is None:
+                return None
+            offset = continuation
+    return line[offset:]
+
+
+def fence_opening(content: str) -> tuple[str, int] | None:
+    opening = FENCE_OPEN_RE.fullmatch(content)
+    if opening is None:
+        return None
+    fence = opening.group("fence")
+    if fence[0] == "`" and "`" in opening.group("info"):
+        return None
+    return fence[0], len(fence)
+
+
+def is_fence_closing(content: str, character: str, length: int) -> bool:
+    return (
+        re.fullmatch(
+            rf" {{0,3}}{re.escape(character)}{{{length},}}"
+            r"[ \t]*(?:\r?\n)?",
+            content,
+        )
+        is not None
+    )
+
+
+def is_blank_line(line: str) -> bool:
+    return not line.strip(" \t\r\n")
+
+
+def starts_nonparagraph_block(content: str) -> bool:
+    stripped = content.lstrip(" \t")
+    return re.match(r"#{1,6}(?:[ \t]+|$)", stripped) is not None
+
+
 def mask_fenced_code_blocks(text: str) -> str:
-    """Mask fenced and indented code while preserving character positions."""
+    """Mask non-prose Markdown/HTML regions while preserving character positions."""
+    text = mask_html_non_prose(text)
     masked: list[str] = []
     fence_char: str | None = None
     fence_length = 0
-    fence_blockquote_depth = 0
+    fence_containers: tuple[tuple[str, int], ...] = ()
+    indented_code_open = False
+    paragraph_open = False
 
     for line in text.splitlines(keepends=True):
-        blockquote_depth, content = split_blockquote_prefix(line)
+        while True:
+            if fence_char is not None:
+                if is_blank_line(line):
+                    masked.append(re.sub(r"[^\r\n]", " ", line))
+                    break
+                content = consume_container_continuation(line, fence_containers)
+                if content is None:
+                    fence_char = None
+                    fence_length = 0
+                    fence_containers = ()
+                    paragraph_open = False
+                    continue
+                if is_fence_closing(content, fence_char, fence_length):
+                    fence_char = None
+                    fence_length = 0
+                    fence_containers = ()
+                masked.append(re.sub(r"[^\r\n]", " ", line))
+                break
 
-        if (
-            fence_char is not None
-            and blockquote_depth < fence_blockquote_depth
-        ):
-            fence_char = None
-            fence_length = 0
-            fence_blockquote_depth = 0
+            if indented_code_open:
+                if is_blank_line(line):
+                    masked.append(re.sub(r"[^\r\n]", " ", line))
+                    break
+                _, content = parse_container_prefix(line)
+                if leading_indent_columns(content) >= 4:
+                    masked.append(re.sub(r"[^\r\n]", " ", line))
+                    break
+                indented_code_open = False
+                continue
 
-        if fence_char is not None:
-            closing = re.fullmatch(
-                rf" {{0,3}}{re.escape(fence_char)}{{{fence_length},}}"
-                r"[ \t]*(?:\r?\n)?",
-                content,
-            )
-            if closing is not None and blockquote_depth == fence_blockquote_depth:
-                fence_char = None
-                fence_length = 0
-                fence_blockquote_depth = 0
-            masked.append(re.sub(r"[^\r\n]", " ", line))
-            continue
+            if is_blank_line(line):
+                masked.append(line)
+                paragraph_open = False
+                break
 
-        if leading_indent_columns(content) >= 4:
-            masked.append(re.sub(r"[^\r\n]", " ", line))
-            continue
+            containers, content = parse_container_prefix(line)
+            opening = fence_opening(content)
+            if opening is not None:
+                fence_char, fence_length = opening
+                fence_containers = containers
+                paragraph_open = False
+                masked.append(re.sub(r"[^\r\n]", " ", line))
+                break
 
-        opening = re.match(r"^ {0,3}(?P<fence>`{3,}|~{3,})", content)
-        if opening is not None:
-            fence = opening.group("fence")
-            fence_char = fence[0]
-            fence_length = len(fence)
-            fence_blockquote_depth = blockquote_depth
-            masked.append(re.sub(r"[^\r\n]", " ", line))
-            continue
+            if leading_indent_columns(content) >= 4 and not paragraph_open:
+                indented_code_open = True
+                masked.append(re.sub(r"[^\r\n]", " ", line))
+                break
 
-        masked.append(line)
+            masked.append(line)
+            paragraph_open = not starts_nonparagraph_block(content)
+            break
 
     return "".join(masked)
 
@@ -508,20 +739,30 @@ def validate_semantics(english: str, chinese: str) -> list[str]:
     for name, text in (("AGENTS.md", english), ("AGENTS.zh-CN.md", chinese)):
         for contract, (level, heading, markers) in SEMANTIC_MARKERS[name].items():
             section = extract_heading_section(text, level, heading)
-            searchable = (
-                section
-                if (name, contract) in FENCED_MARKER_CONTRACTS
-                else mask_fenced_code_blocks(section)
-            )
-            normative_line = NORMATIVE_LINE_PATTERNS.get((name, contract))
-            if (
-                not section
-                or not all(marker in searchable for marker in markers)
-                or (
-                    normative_line is not None
-                    and normative_line.search(searchable) is None
+            directory_contract = contract in {
+                "required adaptation directories",
+                "适配层必需目录",
+            }
+            if directory_contract:
+                visible_section = mask_html_non_prose(section)
+                block_digests = [
+                    sha256(match.group(0).encode()).hexdigest()
+                    for match in DIRECTORY_TREE_RE.finditer(visible_section)
+                ]
+                valid = block_digests.count(DIRECTORY_TREE_DIGESTS[name]) == 1
+            else:
+                searchable = mask_fenced_code_blocks(section)
+                line_digests = [
+                    sha256(line.encode()).hexdigest()
+                    for line in searchable.splitlines()
+                ]
+                line_keys = AUTHORITATIVE_CONTRACT_LINE_KEYS[name].get(contract, ())
+                authoritative = all(
+                    line_digests.count(AUTHORITATIVE_LINE_DIGESTS[name][key]) == 1
+                    for key in line_keys
                 )
-            ):
+                valid = all(marker in searchable for marker in markers) and authoritative
+            if not section or not valid:
                 errors.append(f"{name} is missing contract: {contract}")
     return errors
 

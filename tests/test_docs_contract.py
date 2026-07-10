@@ -75,6 +75,22 @@ class DocsContractTests(unittest.TestCase):
             expected_error="AGENTS.md first line lacks a valid SemVer marker",
         )
 
+    def test_validator_rejects_unicode_digits_in_semver(self):
+        invalid_versions = (
+            "1١.12.1",
+            "1.1٢.1",
+            "1.12.1٣",
+            "1.12.1-1١",
+            "1.12.1-١alpha",
+        )
+        for version in invalid_versions:
+            with self.subTest(version=version):
+                marker = (
+                    f"<!-- AGENTS.md v{version} | AgentGo | "
+                    "https://github.com/yeasy/agentgo -->"
+                )
+                self.assertIsNone(validate_docs.extract_version(marker))
+
     def test_h2_sections_keep_public_mapping_and_order(self):
         english_h2 = validate_docs.extract_h2(self.english)
         chinese_h2 = validate_docs.extract_h2(self.chinese)
@@ -150,9 +166,13 @@ class DocsContractTests(unittest.TestCase):
         )
 
     def test_validator_ignores_h3_examples_inside_fenced_code(self):
-        old = "```\n.agents/\n"
+        old = "## Startup Instructions\n"
         self.assertEqual(self.english.count(old), 1)
-        english = self.english.replace(old, "```\n### Example heading\n.agents/\n", 1)
+        english = self.english.replace(
+            old,
+            "```text\n### Example heading\n```\n\n## Startup Instructions\n",
+            1,
+        )
 
         errors = validate_docs.validate_texts(
             english,
@@ -216,6 +236,59 @@ class DocsContractTests(unittest.TestCase):
                         "deletion confirmation"
                     ),
                 )
+
+    def test_indented_code_does_not_interrupt_a_paragraph(self):
+        continuation = "Paragraph stays open.\n    required marker remains prose.\n"
+        code_block = "Paragraph ends.\n\n    hidden marker is code.\n"
+
+        self.assertEqual(
+            validate_docs.mask_fenced_code_blocks(continuation),
+            continuation,
+        )
+        self.assertNotIn(
+            "hidden marker is code",
+            validate_docs.mask_fenced_code_blocks(code_block),
+        )
+
+    def test_validator_rejects_marker_in_list_fenced_code(self):
+        marker = (
+            "| Delete `rules/`, `workflows/`, `reports/`, `experiments/`, or "
+            "`skills/` | Requires confirmation |"
+        )
+        fenced_blocks = {
+            "unordered-list": f"- ```text\n  {marker}\n  ```",
+            "ordered-list": f"10. ```text\n    {marker}\n    ```",
+            "quote-then-list": f"> - ```text\n>   {marker}\n>   ```",
+        }
+        for container, fenced_block in fenced_blocks.items():
+            with self.subTest(container=container):
+                self.assert_single_mutation_rejected(
+                    filename="AGENTS.md",
+                    old=marker,
+                    new=(
+                        "| Delete persistent capability files | Free | "
+                        f"No confirmation. |\n\n{fenced_block}"
+                    ),
+                    expected_error=(
+                        "AGENTS.md is missing contract: persistent capability "
+                        "deletion confirmation"
+                    ),
+                )
+
+    def test_validator_rejects_marker_in_list_blockquote_fenced_code(self):
+        marker = (
+            "| 删除 `rules/`、`workflows/`、`reports/`、`experiments/` 或 "
+            "`skills/` | 需确认 |"
+        )
+        self.assert_single_mutation_rejected(
+            filename="AGENTS.zh-CN.md",
+            old=marker,
+            new=(
+                "| 删除持久能力文件 | 自由 | 无需确认。 |"
+                f"\n\n- > ```text\n  > {marker}\n  > ```"
+            ),
+            expected_error="AGENTS.zh-CN.md is missing contract: 删除持久能力需确认",
+        )
 
     def test_validator_rejects_h3_moved_under_wrong_parent(self):
         self.assert_single_mutation_rejected(
@@ -345,6 +418,167 @@ class DocsContractTests(unittest.TestCase):
             ),
         )
 
+    def test_validator_rejects_narrowed_network_code_rule_in_both_languages(self):
+        cases = (
+            (
+                "AGENTS.md",
+                "installing or running network-fetched code",
+                "installing or running network-fetched code only when unsigned",
+                "AGENTS.md is missing contract: network-fetched code installation "
+                "requires confirmation",
+            ),
+            (
+                "AGENTS.zh-CN.md",
+                "安装或运行网络获取的代码",
+                "安装或运行网络获取的代码（仅限未签名代码）",
+                "AGENTS.zh-CN.md is missing contract: 安装网络获取代码需当场确认",
+            ),
+        )
+        for filename, old, new, expected_error in cases:
+            with self.subTest(filename=filename):
+                self.assert_single_mutation_rejected(
+                    filename=filename,
+                    old=old,
+                    new=new,
+                    expected_error=expected_error,
+                )
+
+    def test_validator_rejects_negated_authoritative_safety_lines(self):
+        cases = (
+            (
+                "AGENTS.md",
+                "The current message outranks every `AGENTS.md`",
+                "This statement is false: ",
+                "current-message priority and closest instruction scope",
+            ),
+            (
+                "AGENTS.md",
+                "- **UNATTENDED**:",
+                "This statement is false: ",
+                "unattended default decline",
+            ),
+            (
+                "AGENTS.md",
+                "Do not read credential files or secret stores",
+                "This statement is false: ",
+                "secret reads limited to necessity",
+            ),
+            (
+                "AGENTS.md",
+                "| Delete `rules/`, `workflows/`, `reports/`, `experiments/`,",
+                "This statement is false: ",
+                "persistent capability deletion confirmation",
+            ),
+            (
+                "AGENTS.md",
+                "| Promote a candidate from `experiments/`",
+                "This statement is false: ",
+                "candidate promotion confirmation",
+            ),
+            (
+                "AGENTS.md",
+                "Changes to Trust & Safety, Evolution Rules, or Hard Constraints",
+                "This statement is false: ",
+                "template sensitive-section confirmation",
+            ),
+            (
+                "AGENTS.zh-CN.md",
+                "当前消息优先于所有 `AGENTS.md`",
+                "以下陈述不成立：",
+                "当前消息优先与最近指令范围",
+            ),
+            (
+                "AGENTS.zh-CN.md",
+                "- **UNATTENDED**：",
+                "以下陈述不成立：",
+                "无人值守默认拒绝",
+            ),
+            (
+                "AGENTS.zh-CN.md",
+                "除非当前任务需要，不读取凭据文件或 secret 存储",
+                "以下陈述不成立：",
+                "仅在必要时读取 secret",
+            ),
+            (
+                "AGENTS.zh-CN.md",
+                "| 删除 `rules/`、`workflows/`、`reports/`、`experiments/`",
+                "以下陈述不成立：",
+                "删除持久能力需确认",
+            ),
+            (
+                "AGENTS.zh-CN.md",
+                "| 从 `experiments/` 把候选促升到 `rules/`",
+                "以下陈述不成立：",
+                "候选促升需确认",
+            ),
+            (
+                "AGENTS.zh-CN.md",
+                "信任与安全、进化规则或硬性约束有变化仍需用户明确确认",
+                "以下陈述不成立：",
+                "模板敏感章节变化需确认",
+            ),
+        )
+        for filename, marker, prefix, contract in cases:
+            source = self.english if filename == "AGENTS.md" else self.chinese
+            line = next(line for line in source.splitlines() if marker in line)
+            with self.subTest(filename=filename, contract=contract):
+                self.assert_single_mutation_rejected(
+                    filename=filename,
+                    old=line,
+                    new=f"{prefix}{line}",
+                    expected_error=f"{filename} is missing contract: {contract}",
+                )
+
+    def test_validator_ignores_canonical_lines_in_html_non_prose(self):
+        cases = (
+            (
+                "AGENTS.md",
+                "- **High-risk side effects**",
+                "<!--\n{line}\n-->",
+                "network-fetched code installation requires confirmation",
+            ),
+            (
+                "AGENTS.zh-CN.md",
+                "- **高风险副作用**",
+                "<PRE>\n{line}\n</PRE>",
+                "安装网络获取代码需当场确认",
+            ),
+        )
+        for filename, marker, wrapper, contract in cases:
+            source = self.english if filename == "AGENTS.md" else self.chinese
+            line = next(line for line in source.splitlines() if line.startswith(marker))
+            with self.subTest(filename=filename):
+                self.assert_single_mutation_rejected(
+                    filename=filename,
+                    old=line,
+                    new=wrapper.format(line=line),
+                    expected_error=f"{filename} is missing contract: {contract}",
+                )
+
+    def test_validator_requires_one_authoritative_safety_line(self):
+        cases = (
+            (
+                "AGENTS.md",
+                "- **High-risk side effects**",
+                "network-fetched code installation requires confirmation",
+            ),
+            (
+                "AGENTS.zh-CN.md",
+                "- **高风险副作用**",
+                "安装网络获取代码需当场确认",
+            ),
+        )
+        for filename, marker, contract in cases:
+            source = self.english if filename == "AGENTS.md" else self.chinese
+            line = next(line for line in source.splitlines() if line.startswith(marker))
+            with self.subTest(filename=filename):
+                self.assert_single_mutation_rejected(
+                    filename=filename,
+                    old=line,
+                    new=f"{line}\n{line}",
+                    expected_error=f"{filename} is missing contract: {contract}",
+                )
+
     def test_validator_rejects_incomplete_misclassified_project_triggers(self):
         self.assert_single_mutation_rejected(
             filename="AGENTS.zh-CN.md",
@@ -397,6 +631,28 @@ class DocsContractTests(unittest.TestCase):
             old="│   ├── review-findings.md\n",
             new="",
             expected_error="AGENTS.zh-CN.md is missing contract: 适配层必需目录",
+        )
+
+    def test_validator_requires_one_exact_directory_tree_block(self):
+        section = validate_docs.extract_heading_section(
+            self.english,
+            3,
+            "Directory Layout",
+        )
+        tree_match = re.search(
+            r"^```[ \t]*\n.*?^```[ \t]*$",
+            section,
+            flags=re.MULTILINE | re.DOTALL,
+        )
+        self.assertIsNotNone(tree_match)
+        tree = tree_match.group(0)
+        self.assert_single_mutation_rejected(
+            filename="AGENTS.md",
+            old=tree,
+            new=f"{tree}\n\n{tree}",
+            expected_error=(
+                "AGENTS.md is missing contract: required adaptation directories"
+            ),
         )
 
     def test_validator_rejects_template_without_same_language_requirement(self):
