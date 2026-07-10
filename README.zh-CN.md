@@ -162,6 +162,8 @@ flowchart LR
 | 数据 | schema 检查、重算、样本验证 |
 | 研究 | 来源质量、日期核验、引用覆盖 |
 
+AgentGo 提供机器可读的[协议一致性语料](./evals/README.md)，包含参考场景及 expected/forbidden 观测。它不是跨工具基准；除非工具专用 runner 产出证据，否则不声称任何工具已经通过。
+
 ### 已有项目自动吸收
 
 如果项目里已经散落着 `.cursorrules` / `CLAUDE.md` / `.windsurfrules` / `.github/copilot-instructions.md`、`rules.md` / `reports.md` / `project.md` 等自定义说明、docs、brief、风格指南、设计说明、数据字典或工作流文件，bootstrap 或显式重扫时 Agent 会：
@@ -273,7 +275,7 @@ your-project/
 .agents/changelog.md
 ```
 
-> **安全提醒：** 不论提不提交，都建议配 secret-scan（如 gitleaks）。`.agents/memory/` 偶尔会出现"我们的 API key 是 X"这类内容，提前防漏胜过事后补救。
+> **安全提醒：** 无论是否提交 `.agents/`，都应把 secret scan（如 gitleaks）作为纵深防御。协议禁止在 `.agents/` 中存储 secret 真实值；扫描用于在泄露前捕捉意外违规。
 
 </details>
 

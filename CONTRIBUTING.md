@@ -11,6 +11,16 @@ English and Simplified Chinese files are maintained in parallel:
 
 Every PR that changes meaning in one language must update the other. Contract tests validate semantic structure without requiring identical physical line counts or heading line numbers; CI (`.github/workflows/docs.yml`) fails on covered drift.
 
+## Conformance corpus
+
+`evals/scenarios.json` is a protocol conformance corpus, not cross-tool pass evidence. Keep runs isolated, disable network access, stub external side effects, use synthetic secrets only, and update `protocol_version` whenever the template version changes.
+
+Run the complete contract suite before submitting changes:
+
+```bash
+python3 -m unittest discover -s tests -p 'test_*.py' -v
+```
+
 ## Versioning and releases
 
 - The first line of `AGENTS.md` carries the template version: `<!-- AGENTS.md vX.Y.Z ... -->`.

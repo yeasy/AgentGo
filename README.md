@@ -162,6 +162,8 @@ Recommended memory entry shape: `date`, `artifact`, `note`, `evidence`, `status`
 | Data | schema check, recalculation, sample validation |
 | Research | source quality, date check, citation coverage |
 
+AgentGo ships a machine-readable [protocol conformance corpus](./evals/README.md) with reference scenarios and expected/forbidden observations. It is not a cross-tool benchmark and does not claim that any tool passes without evidence from a tool-specific runner.
+
 ### Brownfield Auto-Adoption
 
 If your project already has `.cursorrules` / `CLAUDE.md` / `.windsurfrules` / `.github/copilot-instructions.md`, custom docs such as `rules.md` / `reports.md` / `project.md`, docs, briefs, style guides, design notes, data dictionaries, or workflow files scattered around, the agent will, during bootstrap or explicit rescan:
@@ -273,7 +275,7 @@ Common team pattern:
 .agents/changelog.md
 ```
 
-> **Security note:** whether you commit it or not, set up a secret-scan (e.g. gitleaks). `.agents/memory/` will occasionally pick up things like "our API key is X"; preventing leaks beats cleaning them up.
+> **Security note:** whether you commit `.agents/` or not, use secret scanning (for example, gitleaks) as defense in depth. The protocol forbids storing secret values in `.agents/`; scanning helps catch accidental violations before they leak.
 
 </details>
 
