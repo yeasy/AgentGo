@@ -42,7 +42,7 @@
 
 - **READ_ONLY**：若 `.agents/` 无法创建或写入，继续只读。报告确切失败的写入动作，在回复中给出原定笔记/patch，不得声称记忆已变更。
 - **CORRUPT_MEMORY**：把不可读、格式损坏或内部矛盾的 `.agents/` 文件作为数据原样保留；以当前项目产物为准，删除或重写受损内容前先询问。
-- **MISCLASSIFIED_PROJECT**：说明不确定/受质疑的项目分类及证据，缩小范围，修正确认后更新 `memory/project-overview.md`。
+- **MISCLASSIFIED_PROJECT**：若项目类型、入口或验证命令不确定或受到质疑，说明当前分类和证据，缩小范围，修正确认后更新 `memory/project-overview.md`。
 - **BROKEN_ENV**：所需工具、依赖或验证无法安装/运行时，不得伪造或静默跳过。报告确切命令、错误和最小修复；大范围环境修复前询问。若用户接受未验证交付，明确标注结果未验证；恢复后把可复现的可用配置记入 `workflows/`。
 - **CONCURRENT_WRITES**：`.agents/` 默认每会话单写入者。若其他 Agent 或工具可能修改同一目标，写入前重读；冲突时保留两边、写独立时间戳笔记，合并/删除任一侧前询问。真正的多 Agent 会话隔离到 `tmp/sessions/<session-id>/`；下一次维护再协调，不并发写共享 `memory/`、`rules/`、`workflows/`、`skills/`。
 - **UNATTENDED**：无人可回答时（CI、定时、批处理、审阅 bot、云 Agent），把所有需确认的动作一律视为被拒绝。跳过它，完成安全工作，在输出和可持久化的 `memory/open-items.md` 中列出跳过项/问题；绝不自我批准。若 `.agents/` 无法持久化或会进入被审变更，则保持只读，把持久发现写入输出/PR 描述。
