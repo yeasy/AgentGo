@@ -38,7 +38,7 @@ A capable model still underperforms its potential on your project — not for la
 - Claude Code / Codex / Cursor / Copilot / Windsurf / Gemini each have their own config format, and the same rules get rewritten over and over
 - Once you do write down project conventions, the knowledge stays trapped in chat history; the longer the session, the more noise it accumulates
 
-**What AgentGo gives you:** a stable [AGENTS.md protocol](https://raw.githubusercontent.com/yeasy/agentgo/main/AGENTS.md) plus an adaptive `.agents/` project layer. Drop `AGENTS.md` into any project root; the agent creates `.agents/` when project work needs adaptation or durable memory, records durable project knowledge after meaningful work, and never needs to edit `AGENTS.md` for that project. Project memory stays lightweight: source indexes, optional relationship maps, workflows, decisions, changelogs, and outcomes live under `.agents/`; full knowledge graphs or automatic instrumentation are not required.
+**What AgentGo gives you:** a stable [AGENTS.md protocol](https://raw.githubusercontent.com/yeasy/agentgo/v1.12.1/AGENTS.md) plus an adaptive `.agents/` project layer. Drop `AGENTS.md` into any project root; the agent creates `.agents/` when project work needs adaptation or durable memory, records durable project knowledge after meaningful work, and never needs to edit `AGENTS.md` for that project. Project memory stays lightweight: source indexes, optional relationship maps, workflows, decisions, changelogs, and outcomes live under `.agents/`; full knowledge graphs or automatic instrumentation are not required.
 
 |                          | Without AgentGo                                | With AgentGo                                          |
 |:-------------------------|:-----------------------------------------------|:------------------------------------------------------|
@@ -55,17 +55,17 @@ A capable model still underperforms its potential on your project — not for la
 
 Two ways in — pick whichever matches where you are.
 
-**From your terminal** — download [AGENTS.md](https://github.com/yeasy/agentgo/blob/main/AGENTS.md) into your project root:
+**From your terminal** — download the current stable [AGENTS.md](https://github.com/yeasy/agentgo/blob/v1.12.1/AGENTS.md) into your project root:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/main/AGENTS.md -o AGENTS.md
+curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.12.1/AGENTS.md -o AGENTS.md
 ```
 
-Then reopen an AGENTS.md-aware agent, or add the small alias/import shown in the compatibility section for tools that use another filename. To pin a stable release instead of tracking `main`, replace `main` in the URL with a release tag such as `v1.12.1`.
+Then reopen an AGENTS.md-aware agent, or add the small alias/import shown in the compatibility section for tools that use another filename. These commands use the current stable release. To preview unreleased changes, replace `v1.12.1` with `main`; `main` is an unreleased edge channel and may not match a published release.
 
 **From inside your agent (Codex / Claude Code)** — paste this one line into the chat and let the agent fetch, read, and bootstrap in a single shot:
 
-> **"Download https://raw.githubusercontent.com/yeasy/agentgo/main/AGENTS.md to `./AGENTS.md`, read it, then initialize this project per its instructions — execute step by step and report each step. If your tool auto-loads a different instruction file (e.g. Claude Code's `CLAUDE.md`), also add an import or symlink so it loads next session."**
+> **"Download https://raw.githubusercontent.com/yeasy/agentgo/v1.12.1/AGENTS.md to `./AGENTS.md`, read it, then initialize this project per its instructions — execute step by step and report each step. If your tool auto-loads a different instruction file (e.g. Claude Code's `CLAUDE.md`), also add an import or symlink so it loads next session."**
 
 The agent will ask permission to fetch the file and write into your project — **grant it**, otherwise it can only suggest without acting. When project work needs adaptation or durable memory, the agent bootstraps `.agents/` automatically.
 
@@ -284,24 +284,20 @@ Update only `AGENTS.md`; keep `.agents/` in place. `.agents/` is your project's 
 
 Keep the same language variant you installed. English projects should update from `AGENTS.md`; Simplified Chinese installs should update from `AGENTS.zh-CN.md`, still saved locally as `AGENTS.md`.
 
-If your local `AGENTS.md` has no project-specific edits:
+To update an unmodified local template to the current stable release:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/main/AGENTS.md -o AGENTS.md
+curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.12.1/AGENTS.md -o AGENTS.md
 ```
 
 If you may have edited it locally, diff before replacing:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/main/AGENTS.md -o /tmp/AGENTS.latest.md
+curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.12.1/AGENTS.md -o /tmp/AGENTS.latest.md
 diff -u AGENTS.md /tmp/AGENTS.latest.md
 ```
 
-To pin a stable release instead of tracking `main`:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.12.1/AGENTS.md -o AGENTS.md
-```
+To preview unreleased changes instead, replace `v1.12.1` with `main`; review the diff before installing from that edge channel.
 
 Do not let an agent silently replace `AGENTS.md` on a timer. During `.agents/` maintenance, it may check for a newer AgentGo template and suggest an update, but replacement should still require your explicit request or approval. The first comment in `AGENTS.md` carries the template version, for example `AGENTS.md v1.12.1`; release tags are the stable install target.
 

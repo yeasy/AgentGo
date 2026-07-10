@@ -38,6 +38,10 @@ Desktop.ini
 *.log
 *.tmp
 
+# Python validation artifacts
+__pycache__/
+*.py[cod]
+
 # AgentGo itself: this repo is the spec, not a project that uses it.
 # Downstream users should commit AGENTS.md and decide per-team whether
 # to gitignore .agents/ — see README "Should I commit .agents/ to git?"

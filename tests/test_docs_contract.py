@@ -563,14 +563,16 @@ class DocsContractTests(unittest.TestCase):
         version = validate_docs.extract_version(self.english)
         expected = {
             "README.md": (
-                f"release tag such as `v{version}`",
+                "current stable release",
                 f"agentgo/v{version}/AGENTS.md",
                 f"AGENTS.md v{version}",
+                f"replace `v{version}` with `main`",
             ),
             "README.zh-CN.md": (
-                f"release tag，例如 `v{version}`",
+                "当前稳定版",
                 f"agentgo/v{version}/AGENTS.zh-CN.md",
                 f"AGENTS.md v{version}",
+                f"把 `v{version}` 换成 `main`",
             ),
         }
 

@@ -38,7 +38,7 @@
 - Claude Code / Codex / Cursor / Copilot / Windsurf / Gemini 各有一套配置格式，规则反复抄
 - 写完一遍项目约定，知识又跟着聊天记录走，记忆越长越多噪音
 
-**AgentGo 给你的：** 一份稳定的 [AGENTS.md 协议](https://raw.githubusercontent.com/yeasy/agentgo/main/AGENTS.zh-CN.md) 加一个自适应 `.agents/` 项目层。把 `AGENTS.md` 放进任何项目根目录；当项目工作需要适配或持久记忆时，Agent 自动创建 `.agents/`，每次有意义工作后记录持久项目知识，且无需为该项目修改 `AGENTS.md` 本体。项目记忆保持轻量：来源索引、可选关系图、工作流、决策、changelog 和 outcomes 都放在 `.agents/` 下；不要求完整知识图谱或自动埋点。
+**AgentGo 给你的：** 一份稳定的 [AGENTS.md 协议](https://raw.githubusercontent.com/yeasy/agentgo/v1.12.1/AGENTS.zh-CN.md) 加一个自适应 `.agents/` 项目层。把 `AGENTS.md` 放进任何项目根目录；当项目工作需要适配或持久记忆时，Agent 自动创建 `.agents/`，每次有意义工作后记录持久项目知识，且无需为该项目修改 `AGENTS.md` 本体。项目记忆保持轻量：来源索引、可选关系图、工作流、决策、changelog 和 outcomes 都放在 `.agents/` 下；不要求完整知识图谱或自动埋点。
 
 |           | 没有 AgentGo                     | 有 AgentGo                      |
 |:----------|:--------------------------------|:--------------------------------|
@@ -55,17 +55,17 @@
 
 两种方式，按你当前所在位置任选其一。
 
-**在终端里** —— 把 [AGENTS.zh-CN.md](https://github.com/yeasy/agentgo/blob/main/AGENTS.zh-CN.md) 下载到项目根目录并保存为 `AGENTS.md`（AGENTS 规范要求文件名固定）：
+**在终端里** —— 把当前稳定版 [AGENTS.zh-CN.md](https://github.com/yeasy/agentgo/blob/v1.12.1/AGENTS.zh-CN.md) 下载到项目根目录并保存为 `AGENTS.md`（AGENTS 规范要求文件名固定）：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/main/AGENTS.zh-CN.md -o AGENTS.md
+curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.12.1/AGENTS.zh-CN.md -o AGENTS.md
 ```
 
-然后重新打开支持 AGENTS.md 的 Agent；对使用其他文件名的工具，按下方兼容性说明加一个很小的别名或 import。若要锁定稳定发布版而非跟随 `main`，把 URL 中的 `main` 换成 release tag，例如 `v1.12.1`。
+然后重新打开支持 AGENTS.md 的 Agent；对使用其他文件名的工具，按下方兼容性说明加一个很小的别名或 import。以上命令使用当前稳定版。若要预览未发布变更，把 `v1.12.1` 换成 `main`；`main` 是未发布的 edge 通道，内容可能与已发布版本不同。
 
 **在 Agent 里（Codex / Claude Code）** —— 把这一行贴进对话框，让 Agent 一次性完成拉取、阅读、bootstrap：
 
-> **"下载 https://raw.githubusercontent.com/yeasy/agentgo/main/AGENTS.zh-CN.md 保存为根目录 `./AGENTS.md`，阅读它，然后按其中说明逐步初始化本项目并汇报每一步。若你的工具自动加载的指令文件名不同（如 Claude Code 的 `CLAUDE.md`），再加一个 import 或软链接，便于下次自动加载。"**
+> **"下载 https://raw.githubusercontent.com/yeasy/agentgo/v1.12.1/AGENTS.zh-CN.md 保存为根目录 `./AGENTS.md`，阅读它，然后按其中说明逐步初始化本项目并汇报每一步。若你的工具自动加载的指令文件名不同（如 Claude Code 的 `CLAUDE.md`），再加一个 import 或软链接，便于下次自动加载。"**
 
 Agent 会向你申请“拉取文件 / 写入项目”的权限——**请允许**，否则它只能给建议而无法落地。当项目工作需要适配或持久记忆时，Agent 会自动 bootstrap `.agents/`。
 
@@ -284,24 +284,20 @@ your-project/
 
 保持已安装的语言版本一致。英文项目从 `AGENTS.md` 更新；简体中文安装从 `AGENTS.zh-CN.md` 更新，但本地仍保存为 `AGENTS.md`。
 
-如果本地 `AGENTS.md` 没有项目级手改：
+把未手改的本地模板更新到当前稳定版：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/main/AGENTS.zh-CN.md -o AGENTS.md
+curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.12.1/AGENTS.zh-CN.md -o AGENTS.md
 ```
 
 如果可能手改过，先下载到临时文件再比较：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/main/AGENTS.zh-CN.md -o /tmp/AGENTS.latest.md
+curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.12.1/AGENTS.zh-CN.md -o /tmp/AGENTS.latest.md
 diff -u AGENTS.md /tmp/AGENTS.latest.md
 ```
 
-如果要锁定稳定发布版，而不是跟随 `main`：
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.12.1/AGENTS.zh-CN.md -o AGENTS.md
-```
+若要预览未发布变更，把 `v1.12.1` 换成 `main`；从该 edge 通道安装前应先审查 diff。
 
 不要让 Agent 按定时任务静默替换 `AGENTS.md`。`.agents/` 维护时可以检查是否有新版 AgentGo 模板并提出更新建议，但替换仍需要你的明确要求或确认。`AGENTS.md` 首行注释携带模板版本，例如 `AGENTS.md v1.12.1`；稳定安装目标应使用 release tag。
 

@@ -4,47 +4,75 @@ on:
   push:
     branches: [main]
   pull_request:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
 
 jobs:
-  sync:
-    name: EN/zh sync
+  contract:
+    name: protocol contract
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - name: AGENTS.md / AGENTS.zh-CN.md parity
-        run: |
-          en=$(wc -l < AGENTS.md); zh=$(wc -l < AGENTS.zh-CN.md)
-          if [ "$en" -ne "$zh" ]; then
-            echo "Line count drift: AGENTS.md=$en AGENTS.zh-CN.md=$zh"; exit 1
-          fi
-          v_en=$(head -1 AGENTS.md | grep -o 'v[0-9][0-9.]*')
-          v_zh=$(head -1 AGENTS.zh-CN.md | grep -o 'v[0-9][0-9.]*')
-          if [ "$v_en" != "$v_zh" ]; then
-            echo "Version marker drift: AGENTS.md=$v_en AGENTS.zh-CN.md=$v_zh"; exit 1
-          fi
-          echo "AGENTS pair OK: $en lines, $v_en"
-      - name: README heading parity
-        run: |
-          if ! diff <(grep -n '^#' README.md | cut -d: -f1) <(grep -n '^#' README.zh-CN.md | cut -d: -f1); then
-            echo "README heading structure drift between languages"; exit 1
-          fi
-          echo "README headings aligned"
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - name: Validate protocol and documentation contracts
+        run: python3 -m unittest discover -s tests -p 'test_*.py' -v
 
   links:
     name: link check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: lycheeverse/lychee-action@v2
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           # Version-pinned raw URLs are excluded so docs can reference a tag
-          # in the same change that introduces it; shields/star-history are
-          # dynamic badge services that rate-limit checkers; addyosmani.com
+          # in the same atomic push that introduces it; shields/star-history
+          # are dynamic badge services that rate-limit checkers; addyosmani.com
           # drops connections from CI runner IPs (verified alive manually).
           args: >-
             --no-progress
-            --exclude 'img\.shields\.io|star-history\.com|raw\.githubusercontent\.com/yeasy/agentgo/v[0-9]|github\.com/yeasy/AgentGo/security|addyosmani\.com'
+            --exclude 'img\.shields\.io|star-history\.com|raw\.githubusercontent\.com/yeasy/agentgo/v[0-9]|addyosmani\.com'
             README.md README.zh-CN.md AGENTS.md AGENTS.zh-CN.md CONTRIBUTING.md SECURITY.md
           fail: true
+
+  release-integrity:
+    name: release integrity
+    if: github.event_name == 'release'
+    runs-on: ubuntu-latest
+    env:
+      RELEASE_TAG: ${{ github.event.release.tag_name }}
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: ${{ env.RELEASE_TAG }}
+          persist-credentials: false
+      - name: Match release tag to the validated protocol
+        shell: bash
+        run: |
+          python3 scripts/validate_docs.py
+          template_tag="v$(sed -nE '1s/^<!-- AGENTS\.md v([^ ]+) \|.*/\1/p' AGENTS.md)"
+          if [[ "$RELEASE_TAG" != "$template_tag" ]]; then
+            echo "Release tag $RELEASE_TAG does not match template tag $template_tag" >&2
+            exit 1
+          fi
+      - name: Verify public stable downloads
+        shell: bash
+        run: |
+          download_dir="$(mktemp -d)"
+          curl --proto '=https' --tlsv1.2 --fail --silent --show-error --location \
+            --retry 5 --retry-all-errors --retry-delay 2 \
+            "https://raw.githubusercontent.com/yeasy/agentgo/${RELEASE_TAG}/AGENTS.md" \
+            --output "$download_dir/AGENTS.md"
+          curl --proto '=https' --tlsv1.2 --fail --silent --show-error --location \
+            --retry 5 --retry-all-errors --retry-delay 2 \
+            "https://raw.githubusercontent.com/yeasy/agentgo/${RELEASE_TAG}/AGENTS.zh-CN.md" \
+            --output "$download_dir/AGENTS.zh-CN.md"
+          cmp AGENTS.md "$download_dir/AGENTS.md"
+          cmp AGENTS.zh-CN.md "$download_dir/AGENTS.zh-CN.md"
