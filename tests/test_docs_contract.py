@@ -114,7 +114,7 @@ class DocsContractTests(unittest.TestCase):
         )
 
         self.assertEqual(english_ids, chinese_ids)
-        self.assertEqual(english_ids, validate_docs.FAILURE_MODE_IDS)
+        self.assertEqual(english_ids, list(validate_docs.FAILURE_MODE_IDS))
 
     def test_critical_semantics_are_present(self):
         errors = validate_docs.validate_semantics(self.english, self.chinese)
@@ -186,17 +186,74 @@ class DocsContractTests(unittest.TestCase):
         )
 
     def test_validator_rejects_extra_failure_mode(self):
-        actual_ids = validate_docs.FAILURE_MODE_IDS | {"EXTRA_MODE"}
+        actual_ids = ["EXTRA_MODE", *validate_docs.FAILURE_MODE_IDS]
         expected_error = (
             "AGENTS.md failure-mode IDs differ from the fixed contract: "
-            f"expected={sorted(validate_docs.FAILURE_MODE_IDS)}, "
-            f"actual={sorted(actual_ids)}"
+            f"expected={list(validate_docs.FAILURE_MODE_IDS)}, "
+            f"actual={actual_ids}"
         )
         self.assert_single_mutation_rejected(
             filename="AGENTS.md",
             old="- **READ_ONLY**:",
             new="- **EXTRA_MODE**: Synthetic mode.\n- **READ_ONLY**:",
             expected_error=expected_error,
+        )
+
+    def test_validator_rejects_duplicate_failure_mode(self):
+        read_only_entry = next(
+            line
+            for line in self.english.splitlines()
+            if line.startswith("- **READ_ONLY**:")
+        )
+        self.assertEqual(self.english.count(read_only_entry), 1)
+        english = self.english.replace(
+            read_only_entry,
+            f"{read_only_entry}\n{read_only_entry}",
+            1,
+        )
+
+        errors = validate_docs.validate_texts(
+            english,
+            self.chinese,
+            max_bytes=100_000,
+        )
+        self.assertTrue(
+            any(
+                error.startswith(
+                    "AGENTS.md failure-mode IDs differ from the fixed contract"
+                )
+                for error in errors
+            ),
+            errors,
+        )
+
+    def test_validator_rejects_failure_mode_moved_into_fenced_code(self):
+        read_only_entry = next(
+            line
+            for line in self.english.splitlines()
+            if line.startswith("- **READ_ONLY**:")
+        )
+        self.assertEqual(self.english.count(read_only_entry), 1)
+        english = self.english.replace(
+            read_only_entry,
+            f"```text\n{read_only_entry}\n```",
+            1,
+        )
+        self.assertEqual(english.count("READ_ONLY"), self.english.count("READ_ONLY"))
+
+        errors = validate_docs.validate_texts(
+            english,
+            self.chinese,
+            max_bytes=100_000,
+        )
+        self.assertTrue(
+            any(
+                error.startswith(
+                    "AGENTS.md failure-mode IDs differ from the fixed contract"
+                )
+                for error in errors
+            ),
+            errors,
         )
 
     def test_validator_rejects_weakened_current_message_priority(self):

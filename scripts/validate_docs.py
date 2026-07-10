@@ -47,16 +47,14 @@ H3_PAIRS_BY_H2 = {
     H2_PAIRS[5]: H3_PAIRS[:2],
     H2_PAIRS[8]: H3_PAIRS[2:],
 }
-FAILURE_MODE_IDS = frozenset(
-    {
-        "READ_ONLY",
-        "CORRUPT_MEMORY",
-        "MISCLASSIFIED_PROJECT",
-        "BROKEN_ENV",
-        "CONCURRENT_WRITES",
-        "UNATTENDED",
-        "CONTEXT_LOSS",
-    }
+FAILURE_MODE_IDS = (
+    "READ_ONLY",
+    "CORRUPT_MEMORY",
+    "MISCLASSIFIED_PROJECT",
+    "BROKEN_ENV",
+    "CONCURRENT_WRITES",
+    "UNATTENDED",
+    "CONTEXT_LOSS",
 )
 FENCED_MARKER_CONTRACTS = frozenset(
     {
@@ -428,10 +426,10 @@ def extract_section(text: str, heading: str) -> str:
     return extract_heading_section(text, 2, heading)
 
 
-def extract_failure_mode_ids(text: str, heading: str) -> set[str]:
-    section = extract_section(text, heading)
-    return set(
-        re.findall(r"^- \*\*([A-Z][A-Z0-9_]*)\*\*[：:]", section, re.MULTILINE)
+def extract_failure_mode_ids(text: str, heading: str) -> list[str]:
+    section = mask_fenced_code_blocks(extract_section(text, heading))
+    return re.findall(
+        r"^- \*\*([A-Z][A-Z0-9_]*)\*\*[：:]", section, re.MULTILINE
     )
 
 
@@ -513,13 +511,14 @@ def validate_texts(
     if english_ids != chinese_ids:
         errors.append(
             "failure-mode IDs differ: "
-            f"AGENTS.md={sorted(english_ids)}, AGENTS.zh-CN.md={sorted(chinese_ids)}"
+            f"AGENTS.md={english_ids}, AGENTS.zh-CN.md={chinese_ids}"
         )
+    expected_failure_mode_ids = list(FAILURE_MODE_IDS)
     for name, ids in (("AGENTS.md", english_ids), ("AGENTS.zh-CN.md", chinese_ids)):
-        if ids != FAILURE_MODE_IDS:
+        if ids != expected_failure_mode_ids:
             errors.append(
                 f"{name} failure-mode IDs differ from the fixed contract: "
-                f"expected={sorted(FAILURE_MODE_IDS)}, actual={sorted(ids)}"
+                f"expected={expected_failure_mode_ids}, actual={ids}"
             )
 
     errors.extend(validate_semantics(english, chinese))
