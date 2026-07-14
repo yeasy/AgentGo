@@ -65,7 +65,7 @@ Then reopen an AGENTS.md-aware agent, or add the small alias/import shown in the
 
 **From inside your agent (Codex / Claude Code)** — paste this one line into the chat and let the agent fetch, read, and bootstrap in a single shot:
 
-> **"Download https://raw.githubusercontent.com/yeasy/agentgo/v1.12.1/AGENTS.md to `./AGENTS.md`, read it, then initialize this project per its instructions — execute step by step and report each step. If your tool auto-loads a different instruction file (e.g. Claude Code's `CLAUDE.md`), also add an import or symlink so it loads next session."**
+> **"Download [https://raw.githubusercontent.com/yeasy/AgentGo/refs/heads/main/AGENTS.md](https://raw.githubusercontent.com/yeasy/AgentGo/refs/heads/main/AGENTS.md) to ./AGENTS.md, read it, and initialize this project per its instructions."**
 
 The agent will ask permission to fetch the file and write into your project — **grant it**, otherwise it can only suggest without acting. When project work needs adaptation or durable memory, the agent bootstraps `.agents/` automatically.
 

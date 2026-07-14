@@ -65,7 +65,7 @@ curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.12.1/AGENTS.zh-CN.
 
 **在 Agent 里（Codex / Claude Code）** —— 把这一行贴进对话框，让 Agent 一次性完成拉取、阅读、bootstrap：
 
-> **"下载 https://raw.githubusercontent.com/yeasy/agentgo/v1.12.1/AGENTS.zh-CN.md 保存为根目录 `./AGENTS.md`，阅读它，然后按其中说明逐步初始化本项目并汇报每一步。若你的工具自动加载的指令文件名不同（如 Claude Code 的 `CLAUDE.md`），再加一个 import 或软链接，便于下次自动加载。"**
+> **"下载 [https://raw.githubusercontent.com/yeasy/AgentGo/refs/heads/main/AGENTS.zh-CN.md](https://raw.githubusercontent.com/yeasy/AgentGo/refs/heads/main/AGENTS.zh-CN.md) 到 ./AGENTS.md，阅读它，并按其中说明初始化本项目。"**
 
 Agent 会向你申请“拉取文件 / 写入项目”的权限——**请允许**，否则它只能给建议而无法落地。当项目工作需要适配或持久记忆时，Agent 会自动 bootstrap `.agents/`。
 
