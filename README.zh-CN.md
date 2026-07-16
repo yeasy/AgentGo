@@ -38,7 +38,7 @@
 - Claude Code / Codex / Cursor / Copilot / Windsurf / Gemini 各有一套配置格式，规则反复抄
 - 写完一遍项目约定，知识又跟着聊天记录走，记忆越长越多噪音
 
-**AgentGo 给你的：** 一份稳定的 [AGENTS.md 协议](https://raw.githubusercontent.com/yeasy/agentgo/v1.12.1/AGENTS.zh-CN.md) 加一个自适应 `.agents/` 项目层。把 `AGENTS.md` 放进任何项目根目录；当项目工作需要适配或持久记忆时，Agent 自动创建 `.agents/`，每次有意义工作后记录持久项目知识，且无需为该项目修改 `AGENTS.md` 本体。项目记忆保持轻量：来源索引、可选关系图、工作流、决策、changelog 和 outcomes 都放在 `.agents/` 下；不要求完整知识图谱或自动埋点。
+**AgentGo 给你的：** 一份稳定的 [AGENTS.md 协议](https://raw.githubusercontent.com/yeasy/agentgo/v1.13.0/AGENTS.zh-CN.md) 加一个自适应 `.agents/` 项目层。把 `AGENTS.md` 放进任何项目根目录；当项目工作需要适配或持久记忆时，Agent 自动创建 `.agents/`，每次有意义工作后记录持久项目知识，且无需为该项目修改 `AGENTS.md` 本体。项目记忆保持轻量：来源索引、可选关系图、工作流、决策、changelog 和 outcomes 都放在 `.agents/` 下；不要求完整知识图谱或自动埋点。
 
 |           | 没有 AgentGo                     | 有 AgentGo                      |
 |:----------|:--------------------------------|:--------------------------------|
@@ -48,6 +48,7 @@
 | **自我进化**  | 需要人工不断提醒和告诉                     | 通过证据门控、可回退的学习持续演进（促升与删除仍需确认）                |
 | **项目知识**  | 留在聊天记录里，会话一关就失效                 | 沉淀到 `.agents/`，Agent 自维护、定期清理    |
 | **已有文档吸收** | agent 配置和项目说明散落各处 | 扫描发现 → 建索引 → 提取知识；仅确认后归档废弃文件 |
+| **插件与 skill 包** | 靠每个工具装一个插件来补启动流程、记忆、安全门控和审阅纪律 | 一个文件原生具备——那一层大部分变成冗余（[详见常见问题](#常见问题)） |
 
 ---
 
@@ -55,13 +56,13 @@
 
 两种方式，按你当前所在位置任选其一。
 
-**在终端里** —— 把当前稳定版 [AGENTS.zh-CN.md](https://github.com/yeasy/agentgo/blob/v1.12.1/AGENTS.zh-CN.md) 下载到项目根目录并保存为 `AGENTS.md`（AGENTS 规范要求文件名固定）：
+**在终端里** —— 把当前稳定版 [AGENTS.zh-CN.md](https://github.com/yeasy/agentgo/blob/v1.13.0/AGENTS.zh-CN.md) 下载到项目根目录并保存为 `AGENTS.md`（AGENTS 规范要求文件名固定）：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.12.1/AGENTS.zh-CN.md -o AGENTS.md
+curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.13.0/AGENTS.zh-CN.md -o AGENTS.md
 ```
 
-然后重新打开支持 AGENTS.md 的 Agent；对使用其他文件名的工具，按下方兼容性说明加一个很小的别名或 import。以上命令使用当前稳定版。若要预览未发布变更，把 `v1.12.1` 换成 `main`；`main` 是未发布的 edge 通道，内容可能与已发布版本不同。
+然后重新打开支持 AGENTS.md 的 Agent；对使用其他文件名的工具，按下方兼容性说明加一个很小的别名或 import。以上命令使用当前稳定版。若要预览未发布变更，把 `v1.13.0` 换成 `main`；`main` 是未发布的 edge 通道，内容可能与已发布版本不同。
 
 **在 Agent 里（Codex / Claude Code）** —— 把这一行贴进对话框，让 Agent 一次性完成拉取、阅读、bootstrap：
 
@@ -131,6 +132,8 @@ flowchart LR
 
 文字替代：带着当前 `.agents/` 上下文进入，执行任务，把可复用发现和重要结果写入正确的 `.agents/` 位置，定期执行体检：验证候选更新、合并失效记忆、提升重复 workflow/skill、检查结构、清理草稿文件，然后在下一次会话重复。
 
+这个循环两端都是闭合的：开始任务前，Agent 会检查 `.agents/` 中有没有与该任务范围匹配的 rule、workflow、skill 或候选，有则先读；而使用即构成一次 exercised —— 这正是候选能攒够 outcome 以被促升或降级的前提。只写不读的指引会让生命周期永远停在 `candidate`。
+
 ```mermaid
 flowchart LR
     A["读 .agents/<br/>带项目上下文进入"] --> B["执行任务"]
@@ -161,6 +164,10 @@ flowchart LR
 | 设计 | 视觉 QA、导出检查、素材检查 |
 | 数据 | schema 检查、重算、样本验证 |
 | 研究 | 来源质量、日期核验、引用覆盖 |
+
+无论哪种产物，证据本身都有两条规则。证据须**观察所得而非推断**——声称不得超出真正看到的内容，被委派方的汇报不能替代当前状态，验证不完整时必须自己点明缺口。以及**不可能失败的检查不构成证据**——在信任一个新增或改动的检查之前，应先看它在无该变更时或在已知错误输入下失败，否则标记结果为未验证。
+
+反馈方向同理：来自工具、审阅者或转发第三方的审阅意见、批评和提议修改，是需要对照当前产物核实的主张，不是工单。每一条都要回到三格之一——已采纳、有证据反驳、或无法核实及原因——这样条件反射式的附和就无处可放。
 
 AgentGo 提供机器可读的[协议一致性语料](./evals/README.md)，包含参考场景及 expected/forbidden 观测。它不是跨工具基准；除非工具专用 runner 产出证据，否则不声称任何工具已经通过。
 
@@ -265,6 +272,29 @@ your-project/
 </details>
 
 <details>
+<summary><strong>还需要装 agent 插件或 skill 包吗（比如 superpowers）？</strong></summary>
+
+**大部分不需要——非代码项目则完全不需要。** 那类 skill 包的篇幅大头，`AGENTS.md` 本来就原生具备：会话启动、项目记忆、信任边界与 prompt 注入防御、确认门控、委派 brief、审阅契约、能力生命周期和维护节奏。而且是一个文件、全 AGENTS.md 工具通用，不用为每个 harness 维护一套 manifest。
+
+按条款逐一对照 [superpowers](https://github.com/obra/superpowers) 5.1.0（14 个 skill），装上 `AGENTS.md` v1.13.0 之后：
+
+| | 数量 | 原因 |
+|:--|:--|:--|
+| **冗余** | 6 | 协议强制同样的行为，且通常无 hedge、更紧凑——skill 调度、计划执行、并行派发、请求审阅、skill 编写、完成前验证 |
+| **项目管道** | 2 | worktree 与收尾分支的机械步骤属于你自己仓库的 `.agents/workflows/`；其安全内核协议已经门住 |
+| **不是纪律** | 1 | 子 agent 编排是 harness 机制，文本协议伪造不了 |
+| **有意只覆盖一半** | 2 | 头脑风暴与计划撰写——协议刻意把设计对话限定在高风险/重设计工作，而不是给每次改动都设门 |
+| **值得保留** | 3 | 测试先行纪律、根因调试方法、以及如何回应审阅意见 |
+
+**所以：文档、设计、研究、数据、运维和混合媒体项目，整层可以直接丢掉。** 代码实现型项目则值得为最后那三项保留一层方法层。
+
+这条边界是刻意的，不是缺陷。`AGENTS.md` 管的是*什么能做、何时确认、什么被记住*，它不规定*代码怎么写*——因为"永远先写测试，测试之前写的代码删掉重来"这种规则，一个既要适用于研究论文、又必须对低风险工作保持轻量的协议根本发不出来。而把这种规则压缩成协议里的一行，比不写更糟：Agent 会照着摘要走，跳过真正的方法。
+
+如果你希望某条方法规则真正成立、而不是被概率性遵守，协议自己的答案同样适用——用可执行的 guard：hook、测试、权限边界。而不是在任何一层里加更多文字。
+
+</details>
+
+<details>
 <summary><strong>.agents/ 目录要不要提交到 git？</strong></summary>
 
 取决于场景。个人项目建议 gitignore 整个 `.agents/` 目录——它是你私人的工作记忆。团队项目建议提交静态配置（`rules/`、`workflows/`，以及可选的 `skills/`）共享团队规范，但 gitignore 动态数据（`memory/`），因为它们是会话级别的。`AGENTS.md` 本身应该始终提交——它是项目与 Agent 的契约。
@@ -289,19 +319,19 @@ your-project/
 把未手改的本地模板更新到当前稳定版：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.12.1/AGENTS.zh-CN.md -o AGENTS.md
+curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.13.0/AGENTS.zh-CN.md -o AGENTS.md
 ```
 
 如果可能手改过，先下载到临时文件再比较：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.12.1/AGENTS.zh-CN.md -o /tmp/AGENTS.latest.md
+curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.13.0/AGENTS.zh-CN.md -o /tmp/AGENTS.latest.md
 diff -u AGENTS.md /tmp/AGENTS.latest.md
 ```
 
-若要预览未发布变更，把 `v1.12.1` 换成 `main`；从该 edge 通道安装前应先审查 diff。
+若要预览未发布变更，把 `v1.13.0` 换成 `main`；从该 edge 通道安装前应先审查 diff。
 
-不要让 Agent 按定时任务静默替换 `AGENTS.md`。`.agents/` 维护时可以检查是否有新版 AgentGo 模板并提出更新建议，但替换仍需要你的明确要求或确认。`AGENTS.md` 首行注释携带模板版本，例如 `AGENTS.md v1.12.1`；稳定安装目标应使用 release tag。
+不要让 Agent 按定时任务静默替换 `AGENTS.md`。`.agents/` 维护时可以检查是否有新版 AgentGo 模板并提出更新建议，但替换仍需要你的明确要求或确认。`AGENTS.md` 首行注释携带模板版本，例如 `AGENTS.md v1.13.0`；稳定安装目标应使用 release tag。
 
 更新后重启或要求 Agent 重扫：
 

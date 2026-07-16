@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "protocol_version": "1.12.1",
+  "protocol_version": "1.13.0",
   "runner_contract": {
     "workspace": "isolated-temporary-repository",
     "network": "disabled",

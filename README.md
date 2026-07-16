@@ -38,7 +38,7 @@ A capable model still underperforms its potential on your project — not for la
 - Claude Code / Codex / Cursor / Copilot / Windsurf / Gemini each have their own config format, and the same rules get rewritten over and over
 - Once you do write down project conventions, the knowledge stays trapped in chat history; the longer the session, the more noise it accumulates
 
-**What AgentGo gives you:** a stable [AGENTS.md protocol](https://raw.githubusercontent.com/yeasy/agentgo/v1.12.1/AGENTS.md) plus an adaptive `.agents/` project layer. Drop `AGENTS.md` into any project root; the agent creates `.agents/` when project work needs adaptation or durable memory, records durable project knowledge after meaningful work, and never needs to edit `AGENTS.md` for that project. Project memory stays lightweight: source indexes, optional relationship maps, workflows, decisions, changelogs, and outcomes live under `.agents/`; full knowledge graphs or automatic instrumentation are not required.
+**What AgentGo gives you:** a stable [AGENTS.md protocol](https://raw.githubusercontent.com/yeasy/agentgo/v1.13.0/AGENTS.md) plus an adaptive `.agents/` project layer. Drop `AGENTS.md` into any project root; the agent creates `.agents/` when project work needs adaptation or durable memory, records durable project knowledge after meaningful work, and never needs to edit `AGENTS.md` for that project. Project memory stays lightweight: source indexes, optional relationship maps, workflows, decisions, changelogs, and outcomes live under `.agents/`; full knowledge graphs or automatic instrumentation are not required.
 
 |                          | Without AgentGo                                | With AgentGo                                          |
 |:-------------------------|:-----------------------------------------------|:------------------------------------------------------|
@@ -48,6 +48,7 @@ A capable model still underperforms its potential on your project — not for la
 | **Self-improvement**     | Needs constant human reminders                 | Evolves through evidence-gated, reversible learning — promotions and deletions still ask first   |
 | **Project knowledge**    | Stuck in chat history, dies when the session ends | Persisted in `.agents/`, agent maintains and prunes itself |
 | **Existing-doc adoption**| Agent configs and project docs scattered everywhere | Detect → index → extract; archive only obsolete files after you confirm |
+| **Plugins & skill packs** | A per-tool plugin to add boot flow, memory, safety gates, and review discipline | Native in one file — most of that layer becomes redundant ([details](#faq)) |
 
 ---
 
@@ -55,13 +56,13 @@ A capable model still underperforms its potential on your project — not for la
 
 Two ways in — pick whichever matches where you are.
 
-**From your terminal** — download the current stable [AGENTS.md](https://github.com/yeasy/agentgo/blob/v1.12.1/AGENTS.md) into your project root:
+**From your terminal** — download the current stable [AGENTS.md](https://github.com/yeasy/agentgo/blob/v1.13.0/AGENTS.md) into your project root:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.12.1/AGENTS.md -o AGENTS.md
+curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.13.0/AGENTS.md -o AGENTS.md
 ```
 
-Then reopen an AGENTS.md-aware agent, or add the small alias/import shown in the compatibility section for tools that use another filename. These commands use the current stable release. To preview unreleased changes, replace `v1.12.1` with `main`; `main` is an unreleased edge channel and may not match a published release.
+Then reopen an AGENTS.md-aware agent, or add the small alias/import shown in the compatibility section for tools that use another filename. These commands use the current stable release. To preview unreleased changes, replace `v1.13.0` with `main`; `main` is an unreleased edge channel and may not match a published release.
 
 **From inside your agent (Codex / Claude Code)** — paste this one line into the chat and let the agent fetch, read, and bootstrap in a single shot:
 
@@ -131,6 +132,8 @@ flowchart LR
 
 Text alternative: enter with current `.agents/` context, execute the task, record reusable findings and material outcomes in the right `.agents/` location, periodically run a health check that validates candidate updates, merges stale memory, promotes repeated workflows/skills, checks structure, and prunes scratch files, then repeat on the next session.
 
+The loop is closed at both ends: before starting a task the agent checks `.agents/` for a rule, workflow, skill, or candidate matching that task's scope and reads it first — and using one counts as exercising it, which is what lets a candidate accumulate the outcomes it needs to be promoted or demoted. Written-but-never-read guidance would leave the lifecycle stuck at `candidate` forever.
+
 ```mermaid
 flowchart LR
     A["Read .agents/<br/>Enter with project context"] --> B["Execute task"]
@@ -161,6 +164,10 @@ Recommended memory entry shape: `date`, `artifact`, `note`, `evidence`, `status`
 | Design | visual QA, export check, asset inspection |
 | Data | schema check, recalculation, sample validation |
 | Research | source quality, date check, citation coverage |
+
+Whatever the artifact, two rules apply to the evidence itself. Evidence must be **observed, not inferred** — a claim may not outrun what was actually seen, a delegate's summary is not a substitute for the present state, and partial validation must name its own gap. And a check that **cannot fail proves nothing** — before a new or changed check is trusted, the agent should watch it fail without the change or on known-bad input, or label the result unvalidated.
+
+Feedback runs the same way in reverse: review comments, critiques, and proposed fixes arriving from tools, reviewers, or forwarded third parties are claims to verify against current artifacts, not work orders. Each one comes back as applied, disputed with evidence, or unverifiable and why — which leaves reflexive agreement nowhere to hide.
 
 AgentGo ships a machine-readable [protocol conformance corpus](./evals/README.md) with reference scenarios and expected/forbidden observations. It is not a cross-tool benchmark and does not claim that any tool passes without evidence from a tool-specific runner.
 
@@ -265,6 +272,29 @@ A clear boundary between human control and agent autonomy:
 </details>
 
 <details>
+<summary><strong>Do I still need agent plugins or skill packs (e.g. superpowers)?</strong></summary>
+
+**Mostly no — and for non-code projects, not at all.** `AGENTS.md` natively carries what those packs spend most of their bulk on: session boot, project memory, trust boundaries and prompt-injection defense, confirmation gates, delegation briefs, the review contract, capability lifecycle, and the maintenance cadence. It does it in one file, across every AGENTS.md-aware tool, with no per-harness manifest to maintain.
+
+Measured clause by clause against [superpowers](https://github.com/obra/superpowers) 5.1.0 (14 skills), once `AGENTS.md` v1.13.0 is installed:
+
+| | Skills | Why |
+|:--|:--|:--|
+| **Redundant** | 6 | The protocol compels the same behavior, usually unhedged and more compactly — skill dispatch, plan execution, parallel dispatch, requesting review, skill authoring, verification before completion |
+| **Project plumbing** | 2 | Worktree and branch-finish mechanics belong in your repo's `.agents/workflows/`; their safety cores are already gated by the protocol |
+| **Not a discipline** | 1 | Subagent orchestration is a harness mechanism a text protocol cannot fake |
+| **Partial by design** | 2 | Brainstorming and plan authoring — the protocol deliberately scopes design dialogue to high-risk/design-heavy work instead of gating every change |
+| **Worth keeping** | 3 | Test-first discipline, root-cause debugging method, and how to respond to review feedback |
+
+**So: for documentation, design, research, data, ops, and mixed-media projects, drop the extra layer entirely.** For code-implementation projects, a method layer still earns its place for those last three.
+
+That boundary is deliberate, not a gap. `AGENTS.md` governs *what may happen, when to confirm, and what gets remembered*. It does not legislate *how you write the code*, because a rule like "always write the test first, delete code written before its test" cannot be issued by a protocol that must also apply to a research paper and must stay light on low-risk work. Compressing such a rule into a protocol line makes it worse than absent: agents follow the summary and skip the real method.
+
+And if you want a method rule to actually hold rather than be followed probabilistically, the protocol's own answer applies — use an executable guard: a hook, a test, a permission boundary. Not more prose, in any layer.
+
+</details>
+
+<details>
 <summary><strong>Should I commit .agents/ to git?</strong></summary>
 
 It depends. For personal projects, gitignore the whole `.agents/` — it's your private working memory. For team projects, commit static config (`rules/`, `workflows/`, optionally `skills/`) to share team conventions, but gitignore dynamic data (`memory/`) since it's session-level. `AGENTS.md` itself should always be committed — it's the contract between project and agent.
@@ -289,19 +319,19 @@ Keep the same language variant you installed. English projects should update fro
 To update an unmodified local template to the current stable release:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.12.1/AGENTS.md -o AGENTS.md
+curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.13.0/AGENTS.md -o AGENTS.md
 ```
 
 If you may have edited it locally, diff before replacing:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.12.1/AGENTS.md -o /tmp/AGENTS.latest.md
+curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.13.0/AGENTS.md -o /tmp/AGENTS.latest.md
 diff -u AGENTS.md /tmp/AGENTS.latest.md
 ```
 
-To preview unreleased changes instead, replace `v1.12.1` with `main`; review the diff before installing from that edge channel.
+To preview unreleased changes instead, replace `v1.13.0` with `main`; review the diff before installing from that edge channel.
 
-Do not let an agent silently replace `AGENTS.md` on a timer. During `.agents/` maintenance, it may check for a newer AgentGo template and suggest an update, but replacement should still require your explicit request or approval. The first comment in `AGENTS.md` carries the template version, for example `AGENTS.md v1.12.1`; release tags are the stable install target.
+Do not let an agent silently replace `AGENTS.md` on a timer. During `.agents/` maintenance, it may check for a newer AgentGo template and suggest an update, but replacement should still require your explicit request or approval. The first comment in `AGENTS.md` carries the template version, for example `AGENTS.md v1.13.0`; release tags are the stable install target.
 
 After updating, restart or rescan your agent:
 

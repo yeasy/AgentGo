@@ -120,7 +120,7 @@ class DocsContractTests(unittest.TestCase):
                     max_bytes=100_000,
                 )
                 self.assertIn(
-                    "AGENTS.md content differs from the v1.12.1 release lock",
+                    "AGENTS.md content differs from the v1.13.0 release lock",
                     errors,
                 )
 
@@ -169,8 +169,8 @@ class DocsContractTests(unittest.TestCase):
     def test_validator_rejects_numeric_prerelease_with_leading_zero(self):
         self.assert_single_mutation_rejected(
             filename="AGENTS.md",
-            old="AGENTS.md v1.12.1 |",
-            new="AGENTS.md v1.12.1-01 |",
+            old="AGENTS.md v1.13.0 |",
+            new="AGENTS.md v1.13.0-01 |",
             expected_error="AGENTS.md first line lacks a valid SemVer marker",
         )
 
@@ -178,9 +178,9 @@ class DocsContractTests(unittest.TestCase):
         invalid_versions = (
             "1١.12.1",
             "1.1٢.1",
-            "1.12.1٣",
-            "1.12.1-1١",
-            "1.12.1-١alpha",
+            "1.13.0٣",
+            "1.13.0-1١",
+            "1.13.0-١alpha",
         )
         for version in invalid_versions:
             with self.subTest(version=version):
@@ -280,7 +280,7 @@ class DocsContractTests(unittest.TestCase):
         )
         self.assertEqual(
             errors,
-            ["AGENTS.md content differs from the v1.12.1 release lock"],
+            ["AGENTS.md content differs from the v1.13.0 release lock"],
         )
 
     def test_validator_rejects_marker_relocated_into_fenced_code(self):
@@ -917,7 +917,7 @@ class DocsContractTests(unittest.TestCase):
         )
         self.assertEqual(
             errors,
-            ["AGENTS.zh-CN.md content differs from the v1.12.1 release lock"],
+            ["AGENTS.zh-CN.md content differs from the v1.13.0 release lock"],
         )
 
     def test_readme_stable_examples_match_protocol_version(self):
