@@ -1,5 +1,14 @@
 #!/usr/bin/env python3
-"""Validate the bilingual AgentGo protocol contract using only the stdlib."""
+"""Validate the bilingual AgentGo protocol contract using only the stdlib.
+
+The whole-file SHA-256 content lock (``PROTOCOL_CONTENT_DIGESTS``) is the
+authoritative tamper-evidence. The semantic-marker and authoritative-line checks
+are drift *diagnostics*: they name which contract moved (e.g. "deletion
+confirmation") when the content lock is regenerated, not an independent
+guarantee — a determined editor who regenerates the digests can still weaken a
+line, so the prose diff still needs human review. Keep this layer small; prefer
+not to add new semantic contracts.
+"""
 
 from __future__ import annotations
 

@@ -30,6 +30,8 @@ python3 scripts/regen_locks.py --write    # rewrite the digests + RELEASE_LOCK_V
 
 Bump the version marker on line 1 of both files first (see below), then run `--write`, then re-run the contract suite. Keep `AGENTS.md` and `AGENTS.zh-CN.md` on the same version, and update the `v<version>` examples in both READMEs to match.
 
+The whole-file content lock is the real tamper-evidence; the per-line semantic contracts are drift *diagnostics* that name which rule changed, not a guarantee against a determined editor who also regenerates the digests — always review the prose diff. Keep that layer small rather than adding a contract per rule.
+
 ## Versioning and releases
 
 - The first line of `AGENTS.md` carries the template version: `<!-- AGENTS.md vX.Y.Z ... -->`.

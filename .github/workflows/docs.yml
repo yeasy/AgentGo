@@ -3,6 +3,7 @@ name: docs
 on:
   push:
     branches: [main]
+    tags: ['v*']
   pull_request:
   release:
     types: [published]
@@ -44,10 +45,13 @@ jobs:
 
   release-integrity:
     name: release integrity
-    if: github.event_name == 'release'
+    # Runs pre-publish on the v* tag push, so a mismatched tag/version or a
+    # public-download mismatch is caught before the immutable release is
+    # created; also runs post-publish on the release event as a backstop.
+    if: github.event_name == 'release' || (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v'))
     runs-on: ubuntu-latest
     env:
-      RELEASE_TAG: ${{ github.event.release.tag_name }}
+      RELEASE_TAG: ${{ github.event.release.tag_name || github.ref_name }}
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
