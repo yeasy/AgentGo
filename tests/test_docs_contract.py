@@ -120,7 +120,8 @@ class DocsContractTests(unittest.TestCase):
                     max_bytes=100_000,
                 )
                 self.assertIn(
-                    "AGENTS.md content differs from the v1.13.0 release lock",
+                    "AGENTS.md content differs from the "
+                    f"v{validate_docs.RELEASE_LOCK_VERSION} release lock",
                     errors,
                 )
 
@@ -169,8 +170,8 @@ class DocsContractTests(unittest.TestCase):
     def test_validator_rejects_numeric_prerelease_with_leading_zero(self):
         self.assert_single_mutation_rejected(
             filename="AGENTS.md",
-            old="AGENTS.md v1.13.0 |",
-            new="AGENTS.md v1.13.0-01 |",
+            old=f"AGENTS.md v{validate_docs.RELEASE_LOCK_VERSION} |",
+            new=f"AGENTS.md v{validate_docs.RELEASE_LOCK_VERSION}-01 |",
             expected_error="AGENTS.md first line lacks a valid SemVer marker",
         )
 
@@ -280,7 +281,10 @@ class DocsContractTests(unittest.TestCase):
         )
         self.assertEqual(
             errors,
-            ["AGENTS.md content differs from the v1.13.0 release lock"],
+            [
+                "AGENTS.md content differs from the "
+                f"v{validate_docs.RELEASE_LOCK_VERSION} release lock"
+            ],
         )
 
     def test_validator_rejects_marker_relocated_into_fenced_code(self):
@@ -917,7 +921,10 @@ class DocsContractTests(unittest.TestCase):
         )
         self.assertEqual(
             errors,
-            ["AGENTS.zh-CN.md content differs from the v1.13.0 release lock"],
+            [
+                "AGENTS.zh-CN.md content differs from the "
+                f"v{validate_docs.RELEASE_LOCK_VERSION} release lock"
+            ],
         )
 
     def test_readme_stable_examples_match_protocol_version(self):
@@ -941,6 +948,38 @@ class DocsContractTests(unittest.TestCase):
             text = (ROOT / name).read_text(encoding="utf-8")
             with self.subTest(path=name):
                 self.assertTrue(all(marker in text for marker in markers))
+
+    def test_readme_mirrors_protocol_maintenance_thresholds(self):
+        # Both READMEs paraphrase the maintenance-cadence numbers. Source them
+        # from AGENTS.md so a future threshold change cannot silently drift the
+        # READMEs out of sync (the "README mirrors protocol" rule, otherwise
+        # enforced only by human diligence).
+        maintenance = validate_docs.extract_heading_section(
+            self.english, 3, "Maintenance Cadence"
+        )
+        patterns = {
+            "per-file line cap": r"file exceeds (\d[\d,]*) lines",
+            "aggregate line cap": r"exceeds about (\d[\d,]*) lines",
+            "changelog delta": r"at least (\d[\d,]*) lines since maintenance",
+        }
+        thresholds = {}
+        for label, pattern in patterns.items():
+            match = re.search(pattern, maintenance)
+            self.assertIsNotNone(
+                match, f"maintenance threshold '{label}' not found in AGENTS.md"
+            )
+            thresholds[label] = match.group(1)
+
+        for name in ("README.md", "README.zh-CN.md"):
+            text = (ROOT / name).read_text(encoding="utf-8")
+            for label, number in thresholds.items():
+                with self.subTest(path=name, threshold=label):
+                    self.assertIn(
+                        number,
+                        text,
+                        f"{name} no longer mirrors maintenance threshold "
+                        f"'{label}' ({number})",
+                    )
 
     def test_contributing_sync_contract_avoids_physical_line_promises(self):
         text = (ROOT / "CONTRIBUTING.md").read_text(encoding="utf-8")

@@ -1,6 +1,6 @@
 # Contributing to AgentGo
 
-Thanks for helping! The bar for changes: **stay lean and generic** — if a change doesn't help at least three different AI tools, it probably doesn't belong here. Open an issue first for structural changes; bug fixes and small template improvements can go straight to PR.
+Thanks for helping! The bar for changes: **stay lean and generic** — if a change doesn't help at least three different AI tools, it probably doesn't belong here. Open an issue first for structural changes. Small doc/tooling fixes can go straight to PR; any edit to `AGENTS.md` / `AGENTS.zh-CN.md` also needs the release-lock step below, so it is never a one-line change.
 
 ## Bilingual sync (enforced by CI)
 
@@ -11,15 +11,24 @@ English and Simplified Chinese files are maintained in parallel:
 
 Every PR that changes meaning in one language must update the other. Contract tests validate semantic structure without requiring identical physical line counts or heading line numbers; CI (`.github/workflows/docs.yml`) fails on covered drift.
 
-## Conformance corpus
-
-`evals/scenarios.json` is a protocol conformance corpus, not cross-tool pass evidence. Keep runs isolated, disable network access, stub external side effects, use synthetic secrets only, and update `protocol_version` whenever the template version changes.
+## Running the contract suite
 
 Run the complete contract suite before submitting changes:
 
 ```bash
 python3 -m unittest discover -s tests -p 'test_*.py' -v
 ```
+
+## Editing AGENTS.md (release locks)
+
+The validator pins each protocol file by SHA-256 (a whole-file content lock plus per-line and directory-tree digests in `scripts/validate_docs.py`). **Any** edit to `AGENTS.md` or `AGENTS.zh-CN.md` therefore fails the suite with `content differs from the release lock` until the digests are regenerated. Do not hand-edit the hashes — regenerate them:
+
+```bash
+python3 scripts/regen_locks.py           # check whether locks are stale
+python3 scripts/regen_locks.py --write    # rewrite the digests + RELEASE_LOCK_VERSION
+```
+
+Bump the version marker on line 1 of both files first (see below), then run `--write`, then re-run the contract suite. Keep `AGENTS.md` and `AGENTS.zh-CN.md` on the same version, and update the `v<version>` examples in both READMEs to match.
 
 ## Versioning and releases
 

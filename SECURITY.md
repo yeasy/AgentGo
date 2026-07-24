@@ -4,8 +4,8 @@ AgentGo is a text protocol: the deliverable is `AGENTS.md` itself. A "vulnerabil
 
 ## Reporting
 
-- For protocol weaknesses, ambiguities, or unsafe defaults that carry no immediate exploitation risk, open a regular [GitHub issue](https://github.com/yeasy/AgentGo/issues).
-- For anything you would not want public before a fix lands (for example a realistic injection chain against downstream users), use [GitHub private vulnerability reporting](https://github.com/yeasy/AgentGo/security/advisories/new).
+- For protocol weaknesses, ambiguities, or unsafe defaults that carry no immediate exploitation risk, open a regular [GitHub issue](https://github.com/yeasy/agentgo/issues).
+- For anything you would not want public before a fix lands (for example a realistic injection chain against downstream users), use [GitHub private vulnerability reporting](https://github.com/yeasy/agentgo/security/advisories/new).
 
 Please cite the exact file and line plus a concrete misuse scenario. Expect an initial response within a week.
 

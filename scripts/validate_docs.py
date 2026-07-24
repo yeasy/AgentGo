@@ -12,10 +12,10 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 MAX_BYTES = 28_672
-RELEASE_LOCK_VERSION = "1.13.0"
+RELEASE_LOCK_VERSION = "1.13.1"
 PROTOCOL_CONTENT_DIGESTS = {
-    "AGENTS.md": "c8181da90b7cf712c3c6730c3ab6021ddef89c850e2c55da6bc2d42ea359ada8",
-    "AGENTS.zh-CN.md": "277a697a9d61c9656646712711c71dabb84709566d1c8ccfe180e13baa69bf27",
+    "AGENTS.md": "13dc0317669fcef7baadac808181d3d8cdd22c08322c041e3fb91613e55af911",
+    "AGENTS.zh-CN.md": "a511ba19835dfe155a48f32e66d84e421e6ced3b39873a086d09a3bcbfbeac0d",
 }
 NUMERIC_IDENTIFIER = r"(?:0|[1-9][0-9]*)"
 NON_NUMERIC_IDENTIFIER = r"(?:[0-9]*[A-Za-z-][0-9A-Za-z-]*)"
