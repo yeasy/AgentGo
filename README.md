@@ -38,7 +38,7 @@ A capable model still underperforms its potential on your project — not for la
 - Claude Code / Codex / Cursor / Copilot / Windsurf / Gemini each have their own config format, and the same rules get rewritten over and over
 - Once you do write down project conventions, the knowledge stays trapped in chat history; the longer the session, the more noise it accumulates
 
-**What AgentGo gives you:** a stable [AGENTS.md protocol](https://raw.githubusercontent.com/yeasy/agentgo/v1.13.1/AGENTS.md) plus an adaptive `.agents/` project layer. Drop `AGENTS.md` into any project root; the agent creates `.agents/` when project work needs adaptation or durable memory, records durable project knowledge after meaningful work, and never needs to edit `AGENTS.md` for that project. Project memory stays lightweight: source indexes, optional relationship maps, workflows, decisions, changelogs, and outcomes live under `.agents/`; full knowledge graphs or automatic instrumentation are not required.
+**What AgentGo gives you:** a stable [AGENTS.md protocol](https://raw.githubusercontent.com/yeasy/agentgo/v1.14.0/AGENTS.md) plus an adaptive `.agents/` project layer. Drop `AGENTS.md` into any project root; the agent creates `.agents/` when project work needs adaptation or durable memory, records durable project knowledge after meaningful work, and never needs to edit `AGENTS.md` for that project. Project memory stays lightweight: source indexes, optional relationship maps, workflows, decisions, changelogs, and outcomes live under `.agents/`; full knowledge graphs or automatic instrumentation are not required.
 
 |                          | Without AgentGo                                | With AgentGo                                          |
 |:-------------------------|:-----------------------------------------------|:------------------------------------------------------|
@@ -56,17 +56,17 @@ A capable model still underperforms its potential on your project — not for la
 
 Two ways in — pick whichever matches where you are.
 
-**From your terminal** — download the current stable [AGENTS.md](https://github.com/yeasy/agentgo/blob/v1.13.1/AGENTS.md) into your project root:
+**From your terminal** — download the current stable [AGENTS.md](https://github.com/yeasy/agentgo/blob/v1.14.0/AGENTS.md) into your project root:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.13.1/AGENTS.md -o AGENTS.md
+curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.14.0/AGENTS.md -o AGENTS.md
 ```
 
-Then reopen an AGENTS.md-aware agent, or add the small alias/import shown in the compatibility section for tools that use another filename. These commands use the current stable release. To preview unreleased changes, replace `v1.13.1` with `main`; `main` is an unreleased edge channel and may not match a published release.
+Then reopen an AGENTS.md-aware agent, or add the small alias/import shown in the compatibility section for tools that use another filename. These commands use the current stable release. To preview unreleased changes, replace `v1.14.0` with `main`; `main` is an unreleased edge channel and may not match a published release.
 
 **From inside your agent (Codex / Claude Code)** — paste this one line into the chat and let the agent fetch, read, and bootstrap in a single shot:
 
-> **"Download [https://raw.githubusercontent.com/yeasy/agentgo/v1.13.1/AGENTS.md](https://raw.githubusercontent.com/yeasy/agentgo/v1.13.1/AGENTS.md) to ./AGENTS.md, read it, and initialize this project per its instructions."**
+> **"Download [https://raw.githubusercontent.com/yeasy/agentgo/v1.14.0/AGENTS.md](https://raw.githubusercontent.com/yeasy/agentgo/v1.14.0/AGENTS.md) to ./AGENTS.md, read it, and initialize this project per its instructions."**
 
 The agent will ask permission to fetch the file and write into your project — **grant it**, otherwise it can only suggest without acting. When project work needs adaptation or durable memory, the agent bootstraps `.agents/` automatically.
 
@@ -274,7 +274,7 @@ A clear boundary between human control and agent autonomy:
 
 **Mostly no — and for non-code projects, not at all.** `AGENTS.md` natively carries what those packs spend most of their bulk on: session boot, project memory, trust boundaries and prompt-injection defense, confirmation gates, delegation briefs, the review contract, capability lifecycle, and the maintenance cadence. It does it in one file, across every AGENTS.md-aware tool, with no per-harness manifest to maintain.
 
-Measured clause by clause against [superpowers](https://github.com/obra/superpowers) 5.1.0 (14 skills), once `AGENTS.md` v1.13.1 is installed:
+Measured clause by clause against [superpowers](https://github.com/obra/superpowers) 5.1.0 (14 skills), once `AGENTS.md` v1.14.0 is installed:
 
 | | Skills | Why |
 |:--|:--|:--|
@@ -317,19 +317,19 @@ Keep the same language variant you installed. English projects should update fro
 To update an unmodified local template to the current stable release:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.13.1/AGENTS.md -o AGENTS.md
+curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.14.0/AGENTS.md -o AGENTS.md
 ```
 
 If you may have edited it locally, diff before replacing:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.13.1/AGENTS.md -o /tmp/AGENTS.latest.md
+curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.14.0/AGENTS.md -o /tmp/AGENTS.latest.md
 diff -u AGENTS.md /tmp/AGENTS.latest.md
 ```
 
-To preview unreleased changes instead, replace `v1.13.1` with `main`; review the diff before installing from that edge channel.
+To preview unreleased changes instead, replace `v1.14.0` with `main`; review the diff before installing from that edge channel.
 
-Do not let an agent silently replace `AGENTS.md` on a timer. During `.agents/` maintenance, it may check for a newer AgentGo template and suggest an update, but replacement should still require your explicit request or approval. The first comment in `AGENTS.md` carries the template version, for example `AGENTS.md v1.13.1`; release tags are the stable install target.
+Do not let an agent silently replace `AGENTS.md` on a timer. During `.agents/` maintenance, it may check for a newer AgentGo template and suggest an update, but replacement should still require your explicit request or approval. The first comment in `AGENTS.md` carries the template version, for example `AGENTS.md v1.14.0`; release tags are the stable install target.
 
 After updating, restart or rescan your agent:
 
@@ -340,7 +340,7 @@ After updating, restart or rescan your agent:
 <details>
 <summary><strong>Won't .agents/ keep growing and turn into noise?</strong></summary>
 
-It will, which is why `AGENTS.md` enforces a **maintenance cadence**: on session entry, validate that recent notes still match current project artifacts; run a health check whenever any `memory/` file exceeds 200 lines, the aggregate `memory/` size exceeds about 3,000 lines, `changelog.md` has grown ≥ 30 lines since the last `[MAINTENANCE]`, a startup spot-check finds stale notes, `.agents/` structure drifts, or `tmp/` contains stale scratch output. Maintenance dedupes entries, closes resolved items, removes stale notes, records fitness signals, promotes repeated validated procedures into `workflows/` or supported `skills/`, prunes `tmp/`, and can generate `reports/health-<date>.md` for non-trivial cleanups.
+It will, which is why `AGENTS.md` enforces a **maintenance cadence**: on session entry, validate that recent notes still match current project artifacts; run a health check whenever a `memory/` file or the aggregate memory grows bloated, `changelog.md` has grown substantially since the last `[MAINTENANCE]`, a startup spot-check finds stale notes, `.agents/` structure drifts, or `tmp/` contains stale scratch output. Maintenance dedupes entries, closes resolved items, removes stale notes, records fitness signals, promotes repeated validated procedures into `workflows/` or supported `skills/`, prunes `tmp/`, and can generate `reports/health-<date>.md` for non-trivial cleanups.
 
 </details>
 

@@ -695,42 +695,6 @@ class DocsContractTests(unittest.TestCase):
             ),
         )
 
-    def test_validator_rejects_promotion_threshold_change_from_three_to_four(self):
-        self.assert_single_mutation_rejected(
-            filename="AGENTS.md",
-            old="at least 3 distinct tasks",
-            new="at least 4 distinct tasks",
-            expected_error=(
-                "AGENTS.md is missing contract: capability promotion thresholds"
-            ),
-        )
-
-    def test_validator_rejects_promotion_last_five_window_change(self):
-        self.assert_single_mutation_rejected(
-            filename="AGENTS.zh-CN.md",
-            old="最近 5 次记录",
-            new="最近 6 次记录",
-            expected_error="AGENTS.zh-CN.md is missing contract: 能力促升阈值",
-        )
-
-    def test_validator_rejects_demotion_two_of_last_five_change(self):
-        self.assert_single_mutation_rejected(
-            filename="AGENTS.md",
-            old="at least 2 of the last 5 uses",
-            new="at least 3 of the last 5 uses",
-            expected_error=(
-                "AGENTS.md is missing contract: capability demotion thresholds"
-            ),
-        )
-
-    def test_validator_rejects_demotion_ninety_day_change(self):
-        self.assert_single_mutation_rejected(
-            filename="AGENTS.zh-CN.md",
-            old="90 天无使用记录",
-            new="60 天无使用记录",
-            expected_error="AGENTS.zh-CN.md is missing contract: 能力降级阈值",
-        )
-
     def test_validator_rejects_missing_required_directory(self):
         self.assert_single_mutation_rejected(
             filename="AGENTS.zh-CN.md",
@@ -809,38 +773,6 @@ class DocsContractTests(unittest.TestCase):
             new="普通文字变化仍需用户明确确认",
             expected_error=(
                 "AGENTS.zh-CN.md is missing contract: 模板敏感章节变化需确认"
-            ),
-        )
-
-    def test_validator_rejects_maintenance_threshold_change_from_200_to_201(self):
-        self.assert_single_mutation_rejected(
-            filename="AGENTS.md",
-            old="any `memory/` file exceeds 200 lines",
-            new="any `memory/` file exceeds 201 lines",
-            expected_error=(
-                "AGENTS.md is missing contract: maintenance size and cadence "
-                "thresholds"
-            ),
-        )
-
-    def test_validator_rejects_maintenance_aggregate_threshold_change(self):
-        self.assert_single_mutation_rejected(
-            filename="AGENTS.zh-CN.md",
-            old="`memory/` 总计约超过 3,000 行",
-            new="`memory/` 总计约超过 4,000 行",
-            expected_error=(
-                "AGENTS.zh-CN.md is missing contract: 维护规模与频率阈值"
-            ),
-        )
-
-    def test_validator_rejects_maintenance_changelog_threshold_change(self):
-        self.assert_single_mutation_rejected(
-            filename="AGENTS.md",
-            old="changelog gains at least 30 lines since maintenance",
-            new="changelog gains at least 31 lines since maintenance",
-            expected_error=(
-                "AGENTS.md is missing contract: maintenance size and cadence "
-                "thresholds"
             ),
         )
 
@@ -948,38 +880,6 @@ class DocsContractTests(unittest.TestCase):
             text = (ROOT / name).read_text(encoding="utf-8")
             with self.subTest(path=name):
                 self.assertTrue(all(marker in text for marker in markers))
-
-    def test_readme_mirrors_protocol_maintenance_thresholds(self):
-        # Both READMEs paraphrase the maintenance-cadence numbers. Source them
-        # from AGENTS.md so a future threshold change cannot silently drift the
-        # READMEs out of sync (the "README mirrors protocol" rule, otherwise
-        # enforced only by human diligence).
-        maintenance = validate_docs.extract_heading_section(
-            self.english, 3, "Maintenance Cadence"
-        )
-        patterns = {
-            "per-file line cap": r"file exceeds (\d[\d,]*) lines",
-            "aggregate line cap": r"exceeds about (\d[\d,]*) lines",
-            "changelog delta": r"at least (\d[\d,]*) lines since maintenance",
-        }
-        thresholds = {}
-        for label, pattern in patterns.items():
-            match = re.search(pattern, maintenance)
-            self.assertIsNotNone(
-                match, f"maintenance threshold '{label}' not found in AGENTS.md"
-            )
-            thresholds[label] = match.group(1)
-
-        for name in ("README.md", "README.zh-CN.md"):
-            text = (ROOT / name).read_text(encoding="utf-8")
-            for label, number in thresholds.items():
-                with self.subTest(path=name, threshold=label):
-                    self.assertIn(
-                        number,
-                        text,
-                        f"{name} no longer mirrors maintenance threshold "
-                        f"'{label}' ({number})",
-                    )
 
     def test_contributing_sync_contract_avoids_physical_line_promises(self):
         text = (ROOT / "CONTRIBUTING.md").read_text(encoding="utf-8")

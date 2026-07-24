@@ -12,10 +12,10 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 MAX_BYTES = 28_672
-RELEASE_LOCK_VERSION = "1.13.1"
+RELEASE_LOCK_VERSION = "1.14.0"
 PROTOCOL_CONTENT_DIGESTS = {
-    "AGENTS.md": "13dc0317669fcef7baadac808181d3d8cdd22c08322c041e3fb91613e55af911",
-    "AGENTS.zh-CN.md": "a511ba19835dfe155a48f32e66d84e421e6ced3b39873a086d09a3bcbfbeac0d",
+    "AGENTS.md": "01a87c5354a62df41b6cc586f8eef903a5598248fd504c9846f317fa68c2a6ed",
+    "AGENTS.zh-CN.md": "5503fd4e383a6833b825bd8c6ae9763b2f7751247668912cb02c4ab61baa6370",
 }
 NUMERIC_IDENTIFIER = r"(?:0|[1-9][0-9]*)"
 NON_NUMERIC_IDENTIFIER = r"(?:[0-9]*[A-Za-z-][0-9A-Za-z-]*)"
@@ -101,16 +101,6 @@ SEMANTIC_MARKERS = {
             "Failure Modes",
             ("treat every confirmation-gated action as declined",),
         ),
-        "capability promotion thresholds": (
-            3,
-            "Evolution Model",
-            ("at least 3 distinct tasks", "last 5 recorded uses"),
-        ),
-        "capability demotion thresholds": (
-            3,
-            "Evolution Model",
-            ("at least 2 of the last 5 uses", "90 days"),
-        ),
         "required adaptation directories": (
             3,
             "Directory Layout",
@@ -171,15 +161,6 @@ SEMANTIC_MARKERS = {
             (
                 "Changes to Trust & Safety, Evolution Rules, or Hard Constraints "
                 "require explicit confirmation even without conflict.",
-            ),
-        ),
-        "maintenance size and cadence thresholds": (
-            3,
-            "Maintenance Cadence",
-            (
-                "any `memory/` file exceeds 200 lines",
-                "aggregate `memory/` exceeds about 3,000 lines",
-                "changelog gains at least 30 lines since maintenance",
             ),
         ),
         "maintenance pinned and session protection": (
@@ -251,16 +232,6 @@ SEMANTIC_MARKERS = {
             "失败模式",
             ("把所有需确认的动作一律视为被拒绝",),
         ),
-        "能力促升阈值": (
-            3,
-            "进化模型",
-            ("至少 3 个不同任务", "最近 5 次记录"),
-        ),
-        "能力降级阈值": (
-            3,
-            "进化模型",
-            ("最近 5 次至少 2 次", "90 天无使用记录"),
-        ),
         "适配层必需目录": (
             3,
             "目录结构",
@@ -317,15 +288,6 @@ SEMANTIC_MARKERS = {
             "更新本模板",
             ("信任与安全、进化规则或硬性约束有变化仍需用户明确确认",),
         ),
-        "维护规模与频率阈值": (
-            3,
-            "维护节奏",
-            (
-                "任一 `memory/` 文件超过 200 行",
-                "`memory/` 总计约超过 3,000 行",
-                "changelog 新增至少 30 行",
-            ),
-        ),
         "维护保护 pinned 与会话草稿": (
             3,
             "维护节奏",
@@ -377,8 +339,6 @@ AUTHORITATIVE_LINE_DIGESTS = {
         "misclassified": "dd98199f4a2057875bb46e0027d548e9b8587254cef51fd1ddba751c2b43c1a6",
         "unattended": "3c193024bb9186c0c24db13479f5abf851f46465b08bb8f2ef89027717074191",
         "secret": "8b3865402a87534747fd3db84aac145a1d2392b989258adbb34ee4cbdedb1a43",
-        "promotion_threshold": "d52f86d562828594b67f2e1c29d61da82f47fd68b7197ef0c64bca0341446f3e",
-        "demotion_threshold": "2006d3fd5c034c068048485bc09e4b5dfbff722b97029434613e31e66257aa0b",
         "deletion_row": "f8b823fe1cbe69f2342b6e170fd20751476572ca09a8fbf331ed63cd0570de8b",
         "promotion_row": "ee401f7dcd7c34620a414595f53e44a81aae137f3b4f71f9303f663688a532dc",
         "template_download": "84e319f4f38a8846d9336efdfb1aa708cf2aa6bba9d87986ef533bb136adcaf1",
@@ -393,8 +353,6 @@ AUTHORITATIVE_LINE_DIGESTS = {
         "misclassified": "3d56c9568f0fd3d028f083cedac65c1c259ad9811f7ee0b2dedd5ccbffc0e418",
         "unattended": "12ac32897b07a45e493caf6ca314f4946035a1f977efd8473d19ca1b35d8575d",
         "secret": "85271e40756bc7e278a25352eb5bd8d2b4d7792e8c2143f8c4f75f9849bde603",
-        "promotion_threshold": "34c9bf99f5f2b4748e3e0b9c4d9c6179f09021ddead82b60abfbaa590d7d947b",
-        "demotion_threshold": "da475ab88dc5830c6c9e13fb8dc0df47dfba6db5a2d19d88bf521193da5cc4f5",
         "deletion_row": "84135f311d4110b6ee133393d47e972b7fecc88a6300446434f5231921d1f5d6",
         "promotion_row": "f59eda32e0430bfffab1f2692675648d9c65cac25d58df3a6af0a5d4a26a7d65",
         "template_download": "d6cc5e76e5832a5a2c1a952b1c2624a8aa77eb053f0a0d82035ab79853bc6bec",
@@ -411,8 +369,6 @@ AUTHORITATIVE_CONTRACT_LINE_KEYS = {
         "network-fetched code installation requires confirmation": ("high_risk",),
         "misclassified-project trigger surfaces": ("misclassified",),
         "unattended default decline": ("unattended",),
-        "capability promotion thresholds": ("promotion_threshold",),
-        "capability demotion thresholds": ("demotion_threshold",),
         "persistent capability deletion confirmation": ("deletion_row",),
         "candidate promotion confirmation": ("promotion_row",),
         "template official same-language source": (
@@ -435,8 +391,6 @@ AUTHORITATIVE_CONTRACT_LINE_KEYS = {
         "安装网络获取代码需当场确认": ("high_risk",),
         "项目误分类三类触发面": ("misclassified",),
         "无人值守默认拒绝": ("unattended",),
-        "能力促升阈值": ("promotion_threshold",),
-        "能力降级阈值": ("demotion_threshold",),
         "删除持久能力需确认": ("deletion_row",),
         "候选促升需确认": ("promotion_row",),
         "模板仅用官方同语言来源": ("template_download", "template_replace"),
