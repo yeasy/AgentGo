@@ -38,7 +38,7 @@
 - Claude Code / Codex / Cursor / Copilot / Windsurf / Gemini 各有一套配置格式，规则反复抄
 - 写完一遍项目约定，知识又跟着聊天记录走，记忆越长越多噪音
 
-**AgentGo 给你的：** 一份稳定的 [AGENTS.md 协议](https://raw.githubusercontent.com/yeasy/agentgo/v1.14.0/AGENTS.zh-CN.md) 加一个自适应 `.agents/` 项目层。把 `AGENTS.md` 放进任何项目根目录；当项目工作需要适配或持久记忆时，Agent 自动创建 `.agents/`，每次有意义工作后记录持久项目知识，且无需为该项目修改 `AGENTS.md` 本体。项目记忆保持轻量：来源索引、可选关系图、工作流、决策、changelog 和 outcomes 都放在 `.agents/` 下；不要求完整知识图谱或自动埋点。
+**AgentGo 给你的：** 一份稳定的 [AGENTS.md 协议](https://raw.githubusercontent.com/yeasy/agentgo/v1.15.0/AGENTS.zh-CN.md) 加一个自适应 `.agents/` 项目层。把 `AGENTS.md` 放进任何项目根目录；当项目工作需要适配或持久记忆时，Agent 自动创建 `.agents/`，每次有意义工作后记录持久项目知识，且无需为该项目修改 `AGENTS.md` 本体。项目记忆保持轻量：来源索引、可选关系图、工作流、决策、changelog 和 outcomes 都放在 `.agents/` 下；不要求完整知识图谱或自动埋点。
 
 |           | 没有 AgentGo                     | 有 AgentGo                      |
 |:----------|:--------------------------------|:--------------------------------|
@@ -56,17 +56,17 @@
 
 两种方式，按你当前所在位置任选其一。
 
-**在终端里** —— 把当前稳定版 [AGENTS.zh-CN.md](https://github.com/yeasy/agentgo/blob/v1.14.0/AGENTS.zh-CN.md) 下载到项目根目录并保存为 `AGENTS.md`（AGENTS 规范要求文件名固定）：
+**在终端里** —— 把当前稳定版 [AGENTS.zh-CN.md](https://github.com/yeasy/agentgo/blob/v1.15.0/AGENTS.zh-CN.md) 下载到项目根目录并保存为 `AGENTS.md`（AGENTS 规范要求文件名固定）：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.14.0/AGENTS.zh-CN.md -o AGENTS.md
+curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.15.0/AGENTS.zh-CN.md -o AGENTS.md
 ```
 
-然后重新打开支持 AGENTS.md 的 Agent；对使用其他文件名的工具，按下方兼容性说明加一个很小的别名或 import。以上命令使用当前稳定版。若要预览未发布变更，把 `v1.14.0` 换成 `main`；`main` 是未发布的 edge 通道，内容可能与已发布版本不同。
+然后重新打开支持 AGENTS.md 的 Agent；对使用其他文件名的工具，按下方兼容性说明加一个很小的别名或 import。以上命令使用当前稳定版。若要预览未发布变更，把 `v1.15.0` 换成 `main`；`main` 是未发布的 edge 通道，内容可能与已发布版本不同。
 
 **在 Agent 里（Codex / Claude Code）** —— 把这一行贴进对话框，让 Agent 一次性完成拉取、阅读、bootstrap：
 
-> **"下载 [https://raw.githubusercontent.com/yeasy/agentgo/v1.14.0/AGENTS.zh-CN.md](https://raw.githubusercontent.com/yeasy/agentgo/v1.14.0/AGENTS.zh-CN.md) 到 ./AGENTS.md，阅读它，并按其中说明初始化本项目。"**
+> **"下载 [https://raw.githubusercontent.com/yeasy/agentgo/v1.15.0/AGENTS.zh-CN.md](https://raw.githubusercontent.com/yeasy/agentgo/v1.15.0/AGENTS.zh-CN.md) 到 ./AGENTS.md，阅读它，并按其中说明初始化本项目。"**
 
 Agent 会向你申请“拉取文件 / 写入项目”的权限——**请允许**，否则它只能给建议而无法落地。当项目工作需要适配或持久记忆时，Agent 会自动 bootstrap `.agents/`。
 
@@ -165,9 +165,9 @@ flowchart LR
 | 数据 | schema 检查、重算、样本验证 |
 | 研究 | 来源质量、日期核验、引用覆盖 |
 
-无论哪种产物，证据本身都有两条规则。证据须**观察所得而非推断**——声称不得超出真正看到的内容，被委派方的汇报不能替代当前状态，验证不完整时必须自己点明缺口。以及**不可能失败的检查不构成证据**——在信任一个新增或改动的检查之前，应先看它在无该变更时或在已知错误输入下失败，否则标记结果为未验证。
+无论哪种产物，证据本身都有几条规则。证据须**观察所得而非推断**——声称不得超出真正看到的内容，被委派方的汇报不能替代当前状态，验证不完整时必须自己点明缺口。**不可能失败的检查不构成证据**——在信任一个新增或改动的检查之前，应先看它在无该变更时或在已知错误输入下失败，否则标记结果为未验证。**测量本身也是证据的一部分**——它必须被隔离到重跑即可复现；结果由人直接感知时，尾部比均值更重要，因为聚合值可以很好看而产物明显是坏的。以及声称不改变可观察输出的变更——重构、优化、格式整理——要靠**变更前后的输出比对**来证明，而不是靠断言。
 
-反馈方向同理：来自工具、审阅者或转发第三方的审阅意见、批评和提议修改，是需要对照当前产物核实的主张，不是工单。每一条都要回到三格之一——已采纳、有证据反驳、或无法核实及原因——这样条件反射式的附和就无处可放。
+反馈方向同理：来自工具、审阅者或转发第三方的审阅意见、批评和提议修改，是需要对照当前产物核实的主张，不是工单。每一条都要回到三格之一——已采纳、有证据反驳、或无法核实及原因——这样条件反射式的附和就无处可放。而当同一条结论在处理过之后仍反复出现，说明错的是诊断而不是投入：应该去查根因，即便答案与拿到的任务书相反。
 
 ### 已有项目自动吸收
 
@@ -274,7 +274,7 @@ your-project/
 
 **大部分不需要——非代码项目则完全不需要。** 那类 skill 包的篇幅大头，`AGENTS.md` 本来就原生具备：会话启动、项目记忆、信任边界与 prompt 注入防御、确认门控、委派 brief、审阅契约、能力生命周期和维护节奏。而且是一个文件、全 AGENTS.md 工具通用，不用为每个 harness 维护一套 manifest。
 
-按条款逐一对照 [superpowers](https://github.com/obra/superpowers) 5.1.0（14 个 skill），装上 `AGENTS.md` v1.14.0 之后：
+按条款逐一对照 [superpowers](https://github.com/obra/superpowers) 5.1.0（14 个 skill），装上 `AGENTS.md` v1.15.0 之后：
 
 | | 数量 | 原因 |
 |:--|:--|:--|
@@ -317,19 +317,19 @@ your-project/
 把未手改的本地模板更新到当前稳定版：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.14.0/AGENTS.zh-CN.md -o AGENTS.md
+curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.15.0/AGENTS.zh-CN.md -o AGENTS.md
 ```
 
 如果可能手改过，先下载到临时文件再比较：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.14.0/AGENTS.zh-CN.md -o /tmp/AGENTS.latest.md
+curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.15.0/AGENTS.zh-CN.md -o /tmp/AGENTS.latest.md
 diff -u AGENTS.md /tmp/AGENTS.latest.md
 ```
 
-若要预览未发布变更，把 `v1.14.0` 换成 `main`；从该 edge 通道安装前应先审查 diff。
+若要预览未发布变更，把 `v1.15.0` 换成 `main`；从该 edge 通道安装前应先审查 diff。
 
-不要让 Agent 按定时任务静默替换 `AGENTS.md`。`.agents/` 维护时可以检查是否有新版 AgentGo 模板并提出更新建议，但替换仍需要你的明确要求或确认。`AGENTS.md` 首行注释携带模板版本，例如 `AGENTS.md v1.14.0`；稳定安装目标应使用 release tag。
+不要让 Agent 按定时任务静默替换 `AGENTS.md`。`.agents/` 维护时可以检查是否有新版 AgentGo 模板并提出更新建议，但替换仍需要你的明确要求或确认。`AGENTS.md` 首行注释携带模板版本，例如 `AGENTS.md v1.15.0`；稳定安装目标应使用 release tag。
 
 更新后重启或要求 Agent 重扫：
 
@@ -355,6 +355,8 @@ diff -u AGENTS.md /tmp/AGENTS.latest.md
 <summary><strong>多个 Agent 同时用会冲突吗？</strong></summary>
 
 不同工具读同一份 `AGENTS.md`、维护独立会话状态，正常用没问题。但 `.agents/` 是普通文件目录，**不提供锁机制**——如果你真的让两个 Agent 同时写同一个文件，可能互相覆盖。建议串行使用，或让不同 Agent 写不同子目录。每次写入都会在 `.agents/changelog.md` 留痕，便于事后排查。
+
+项目文件同理，而且协议要求在并行开工*之前*就处理好：先确定归属契约——谁拥有哪些路径、哪些接口跨越这些边界、大家共用什么词汇——并且跨边界的变更要在同一次改动里修订该契约，契约才不会和代码脱节。有两点决定了大部分结果：共享同一不变量的部分并不因为目录切得干净就变得独立，这类部分应交由单一负责人顺序完成；以及缺陷若随轮次上升，说明拆分错了，再来一轮也解决不了。
 
 </details>
 
@@ -446,6 +448,7 @@ AgentGo 仓库的交付物**就是 AGENTS.md 协议本身**，这里没有下游
 - OpenAI 的 [AGENTS.md 开放规范](https://agents.md/) 与 [Codex 实践](https://developers.openai.com/codex/guides/agents-md)
 - Mitchell Hashimoto 的 [AI 编码工作流分享](https://mitchellh.com/writing/my-ai-adoption-journey)
 - 社区对 harness 工程的总结（[Addy Osmani](https://addyosmani.com/blog/agent-harness-engineering/)、[HumanLayer](https://www.humanlayer.dev/blog/skill-issue-harness-engineering-for-coding-agents)）
+- [Claude of Duty](https://github.com/mshumer/Claude-of-Duty) —— 它的 `ARCHITECTURE.md` 是一份写给 agent 集群的归属契约，其复盘也坦率记录了可复现测量与并行 fan-out 各自在哪里失效
 
 ---
 

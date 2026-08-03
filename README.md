@@ -38,7 +38,7 @@ A capable model still underperforms its potential on your project — not for la
 - Claude Code / Codex / Cursor / Copilot / Windsurf / Gemini each have their own config format, and the same rules get rewritten over and over
 - Once you do write down project conventions, the knowledge stays trapped in chat history; the longer the session, the more noise it accumulates
 
-**What AgentGo gives you:** a stable [AGENTS.md protocol](https://raw.githubusercontent.com/yeasy/agentgo/v1.14.0/AGENTS.md) plus an adaptive `.agents/` project layer. Drop `AGENTS.md` into any project root; the agent creates `.agents/` when project work needs adaptation or durable memory, records durable project knowledge after meaningful work, and never needs to edit `AGENTS.md` for that project. Project memory stays lightweight: source indexes, optional relationship maps, workflows, decisions, changelogs, and outcomes live under `.agents/`; full knowledge graphs or automatic instrumentation are not required.
+**What AgentGo gives you:** a stable [AGENTS.md protocol](https://raw.githubusercontent.com/yeasy/agentgo/v1.15.0/AGENTS.md) plus an adaptive `.agents/` project layer. Drop `AGENTS.md` into any project root; the agent creates `.agents/` when project work needs adaptation or durable memory, records durable project knowledge after meaningful work, and never needs to edit `AGENTS.md` for that project. Project memory stays lightweight: source indexes, optional relationship maps, workflows, decisions, changelogs, and outcomes live under `.agents/`; full knowledge graphs or automatic instrumentation are not required.
 
 |                          | Without AgentGo                                | With AgentGo                                          |
 |:-------------------------|:-----------------------------------------------|:------------------------------------------------------|
@@ -56,17 +56,17 @@ A capable model still underperforms its potential on your project — not for la
 
 Two ways in — pick whichever matches where you are.
 
-**From your terminal** — download the current stable [AGENTS.md](https://github.com/yeasy/agentgo/blob/v1.14.0/AGENTS.md) into your project root:
+**From your terminal** — download the current stable [AGENTS.md](https://github.com/yeasy/agentgo/blob/v1.15.0/AGENTS.md) into your project root:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.14.0/AGENTS.md -o AGENTS.md
+curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.15.0/AGENTS.md -o AGENTS.md
 ```
 
-Then reopen an AGENTS.md-aware agent, or add the small alias/import shown in the compatibility section for tools that use another filename. These commands use the current stable release. To preview unreleased changes, replace `v1.14.0` with `main`; `main` is an unreleased edge channel and may not match a published release.
+Then reopen an AGENTS.md-aware agent, or add the small alias/import shown in the compatibility section for tools that use another filename. These commands use the current stable release. To preview unreleased changes, replace `v1.15.0` with `main`; `main` is an unreleased edge channel and may not match a published release.
 
 **From inside your agent (Codex / Claude Code)** — paste this one line into the chat and let the agent fetch, read, and bootstrap in a single shot:
 
-> **"Download [https://raw.githubusercontent.com/yeasy/agentgo/v1.14.0/AGENTS.md](https://raw.githubusercontent.com/yeasy/agentgo/v1.14.0/AGENTS.md) to ./AGENTS.md, read it, and initialize this project per its instructions."**
+> **"Download [https://raw.githubusercontent.com/yeasy/agentgo/v1.15.0/AGENTS.md](https://raw.githubusercontent.com/yeasy/agentgo/v1.15.0/AGENTS.md) to ./AGENTS.md, read it, and initialize this project per its instructions."**
 
 The agent will ask permission to fetch the file and write into your project — **grant it**, otherwise it can only suggest without acting. When project work needs adaptation or durable memory, the agent bootstraps `.agents/` automatically.
 
@@ -165,9 +165,9 @@ Recommended memory entry shape: `date`, `artifact`, `note`, `evidence`, `status`
 | Data | schema check, recalculation, sample validation |
 | Research | source quality, date check, citation coverage |
 
-Whatever the artifact, two rules apply to the evidence itself. Evidence must be **observed, not inferred** — a claim may not outrun what was actually seen, a delegate's summary is not a substitute for the present state, and partial validation must name its own gap. And a check that **cannot fail proves nothing** — before a new or changed check is trusted, the agent should watch it fail without the change or on known-bad input, or label the result unvalidated.
+Whatever the artifact, a few rules apply to the evidence itself. Evidence must be **observed, not inferred** — a claim may not outrun what was actually seen, a delegate's summary is not a substitute for the present state, and partial validation must name its own gap. A check that **cannot fail proves nothing** — before a new or changed check is trusted, the agent should watch it fail without the change or on known-bad input, or label the result unvalidated. The **measurement is part of the evidence** — it has to be isolated enough that a repeat run reproduces it, and where a person experiences the result, the tail matters more than the average, because an aggregate can pass while the artifact is plainly broken. And a change claimed to leave observable output unchanged — a refactor, an optimization, a reformat — is proven by **diffing that output before and after**, not by assertion.
 
-Feedback runs the same way in reverse: review comments, critiques, and proposed fixes arriving from tools, reviewers, or forwarded third parties are claims to verify against current artifacts, not work orders. Each one comes back as applied, disputed with evidence, or unverifiable and why — which leaves reflexive agreement nowhere to hide.
+Feedback runs the same way in reverse: review comments, critiques, and proposed fixes arriving from tools, reviewers, or forwarded third parties are claims to verify against current artifacts, not work orders. Each one comes back as applied, disputed with evidence, or unverifiable and why — which leaves reflexive agreement nowhere to hide. And when the same finding keeps coming back after it was supposedly addressed, that indicts the diagnosis rather than the effort: the agent should go after the cause, even when the answer contradicts the brief it was given.
 
 ### Brownfield Auto-Adoption
 
@@ -274,7 +274,7 @@ A clear boundary between human control and agent autonomy:
 
 **Mostly no — and for non-code projects, not at all.** `AGENTS.md` natively carries what those packs spend most of their bulk on: session boot, project memory, trust boundaries and prompt-injection defense, confirmation gates, delegation briefs, the review contract, capability lifecycle, and the maintenance cadence. It does it in one file, across every AGENTS.md-aware tool, with no per-harness manifest to maintain.
 
-Measured clause by clause against [superpowers](https://github.com/obra/superpowers) 5.1.0 (14 skills), once `AGENTS.md` v1.14.0 is installed:
+Measured clause by clause against [superpowers](https://github.com/obra/superpowers) 5.1.0 (14 skills), once `AGENTS.md` v1.15.0 is installed:
 
 | | Skills | Why |
 |:--|:--|:--|
@@ -317,19 +317,19 @@ Keep the same language variant you installed. English projects should update fro
 To update an unmodified local template to the current stable release:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.14.0/AGENTS.md -o AGENTS.md
+curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.15.0/AGENTS.md -o AGENTS.md
 ```
 
 If you may have edited it locally, diff before replacing:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.14.0/AGENTS.md -o /tmp/AGENTS.latest.md
+curl -fsSL https://raw.githubusercontent.com/yeasy/agentgo/v1.15.0/AGENTS.md -o /tmp/AGENTS.latest.md
 diff -u AGENTS.md /tmp/AGENTS.latest.md
 ```
 
-To preview unreleased changes instead, replace `v1.14.0` with `main`; review the diff before installing from that edge channel.
+To preview unreleased changes instead, replace `v1.15.0` with `main`; review the diff before installing from that edge channel.
 
-Do not let an agent silently replace `AGENTS.md` on a timer. During `.agents/` maintenance, it may check for a newer AgentGo template and suggest an update, but replacement should still require your explicit request or approval. The first comment in `AGENTS.md` carries the template version, for example `AGENTS.md v1.14.0`; release tags are the stable install target.
+Do not let an agent silently replace `AGENTS.md` on a timer. During `.agents/` maintenance, it may check for a newer AgentGo template and suggest an update, but replacement should still require your explicit request or approval. The first comment in `AGENTS.md` carries the template version, for example `AGENTS.md v1.15.0`; release tags are the stable install target.
 
 After updating, restart or rescan your agent:
 
@@ -355,6 +355,8 @@ Yes, but only when the Proactive Suggestion Gate passes. The agent should use re
 <summary><strong>Will multiple agents collide?</strong></summary>
 
 Different tools reading the same `AGENTS.md` and keeping their own session state work fine. But `.agents/` is just a directory — **no locking**. If you really do let two agents write the same file at once, they may overwrite each other. Run them serially, or have different agents write to different subdirs. Every write leaves a trace in `.agents/changelog.md` for postmortems.
+
+Your project files need the same treatment, and the protocol asks for it *before* parallel work starts: fix an ownership contract — who owns which paths, which interfaces cross those boundaries, what shared vocabulary everyone uses — and amend it in the same change that crosses a boundary, so the contract cannot drift away from the code. Two caveats decide most outcomes. Parts that share one invariant are not independent no matter how cleanly the directories divide, so give them a single owner working in sequence. And if defects climb round over round, the split is wrong — another round will not fix it.
 
 </details>
 
@@ -446,6 +448,7 @@ The AgentGo repo's deliverable **is the AGENTS.md protocol itself** — there's 
 - OpenAI's [AGENTS.md open spec](https://agents.md/) and [Codex practices](https://developers.openai.com/codex/guides/agents-md)
 - Mitchell Hashimoto's [AI coding workflow notes](https://mitchellh.com/writing/my-ai-adoption-journey)
 - Community summaries on harness engineering ([Addy Osmani](https://addyosmani.com/blog/agent-harness-engineering/), [HumanLayer](https://www.humanlayer.dev/blog/skill-issue-harness-engineering-for-coding-agents))
+- [Claude of Duty](https://github.com/mshumer/Claude-of-Duty) — its `ARCHITECTURE.md` is an ownership contract for an agent fleet, and its write-up is candid about where reproducible measurement and parallel fan-out actually broke
 
 ---
 
